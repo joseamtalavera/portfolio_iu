@@ -35,6 +35,6 @@ public class Booking {
     private LocalTime endHour;
 
     @Column(nullable = false)
-    private String attendes;
+    private Integer attendees;
 
 }

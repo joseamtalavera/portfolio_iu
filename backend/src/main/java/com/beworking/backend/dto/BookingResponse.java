@@ -9,6 +9,6 @@ public record BookingResponse(
     LocalDate date,
     LocalTime startHour, 
     LocalTime endHour, 
-    Integer attendes
+    Integer attendees
 ){}
 

@@ -3,7 +3,7 @@ package com.beworking.backend.services;
 import com.beworking.backend.dto.UserResponse;
 import com.beworking.backend.entities.User;
 import com.beworking.backend.repositories.UserRepository;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextHolder; // It holds the Authentication object is authenticated
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -11,7 +11,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
-@Service
+// Service class to handle user-related operations
+
+@Service // Indicates that this class is a service component in Spring
 public class UserService {
 
     private final UserRepository userRepository;
@@ -20,10 +22,19 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    public UserResponse getCurrentUserProfile() {
+        User user = getCurrentUser();
+        return new UserResponse(user.getId(), user.getName(), user.getEmail());
+    }
+
+    // Method to retrieve the currently authenticated user
+    // It fetches the user details from the security context and retrieves the user from the repository
+    // If the user is not found, it throws a 404 Not Found exception
+
     public User getCurrentUser() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal(); //
         String email;
-        if (principal instanceof UserDetails) {
+        if (principal instanceof UserDetails userDetails) {
             email = userDetails.getUsername();
         } else if (principal instanceof String s) {
             email = s;

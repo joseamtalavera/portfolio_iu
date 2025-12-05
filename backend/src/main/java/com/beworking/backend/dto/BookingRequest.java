@@ -9,9 +9,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public record BookingRequest(
-    @NotBlank String product,
-    @NotNull @FutureOrPresent LocalDate date,
-    @NotNull LocalTime startHour,
-    @NotNull LocalTime endHour,
-    @NotNull @Min(1) String attendes
-){}
+        @NotBlank String product,
+        @NotNull @FutureOrPresent LocalDate date,
+        @NotNull LocalTime startHour,
+        @NotNull LocalTime endHour,
+        @NotNull @Min(1) Integer attendees
+) { }
