@@ -18,8 +18,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
-@Configuration
-@EnableMethodSecurity
+@Configuration // Indicates that the class contains Spring configuration and bean definitions.
+@EnableMethodSecurity // Enables method-level security annotations like @PreAuthorize and @PostAuthorize.
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -30,7 +30,7 @@ public class SecurityConfig {
         this.userRepository = userRepository;
     }
 
-    @Bean
+    @Bean // Defines a bean for the security filter chain, configuring HTTP security settings.
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -46,17 +46,19 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> userRepository.findByEmail(username)
-                .map(user -> org.springframework.security.core.userdetails.User
-                        .withUsername(user.getEmail())
-                        .password(user.getPassword())
-                        .authorities("USER")
-                        .build())
+        // returns a lambda expression that loads user details by username (email) for authentication purposes.
+        return username -> userRepository.findByEmail(username) // looks up the user by email in the db.
+                .map(user -> org.springframework.security.core.userdetails.User // if found, maps to UserDetails object.
+                        .withUsername(user.getEmail()) // sets the username for authentication.
+                        .password(user.getPassword()) // sets the password for authentication.
+                        .authorities("USER") // assigns the "USER" authority to the user.
+                        .build()) // builds the UserDetails object.
                 .orElseThrow(() -> new ResponseStatusException(UNAUTHORIZED, "User not found"));
     }
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
+        // creates and configures a DaoAuthenticationProvider for authentication.
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService());
         authProvider.setPasswordEncoder(passwordEncoder());

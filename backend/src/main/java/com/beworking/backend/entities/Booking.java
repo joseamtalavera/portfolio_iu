@@ -1,6 +1,6 @@
 package com.beworking.backend.entities;
 
-import jakarta. persistence.*;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
