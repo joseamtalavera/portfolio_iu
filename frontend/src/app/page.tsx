@@ -17,9 +17,9 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081/api"; 
 
 export default function Register() {
   const router = useRouter();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [name, setName] = useState(""); // State stores the value of the name input field
+  const [email, setEmail] = useState(""); // State stores the value of the email input field
+  const [password, setPassword] = useState(""); // State stores the value of the password input field
   const [error, setError] = useState<string | null>(null); // Error message to display to the user when registration fails
   const [success, setSuccess] = useState<string | null>(null); // Success message to display to the user when registration succeeds
   const [loading, setLoading] = useState(false); // Loading state to display a loading spinner while the registration is in progress

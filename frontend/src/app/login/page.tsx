@@ -48,8 +48,8 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081/api"; 
 
 export default function Login() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState(""); // State stores the value of the email input field
+  const [password, setPassword] = useState(""); // State stores the value of the password input field
   const [error, setError] = useState<string | null>(null); // Error message to display to the user when login fails
   const [loading, setLoading] = useState(false); // Loading state to display a loading spinner while the login is in progress
 

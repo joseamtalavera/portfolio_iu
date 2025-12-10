@@ -18,7 +18,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager; // AuthenticationManager is responsible for authenticating users.
     private final JwtUtil jwtUtil;
 
     public AuthService(UserRepository userRepository,
@@ -47,6 +47,11 @@ public class AuthService {
     public AuthLoginResponse login(AuthLoginRequest request) {
         try {
             authenticationManager.authenticate(
+                // FLOW: Creates UsernamePasswordAuthenticationToken
+                // This token is used by AuthenticationManager.authenticate()
+                // AuthenticationManager uses authenticationProvider (SecurityConfig line 45)
+                // Which uses BCryptPasswordEncoder (SecurityConfig line 68 → 74)
+                // This is what compares plain password with hashed password    
                     new UsernamePasswordAuthenticationToken(request.email(), request.password())
             );
             User user = userRepository.findByEmail(request.email())
