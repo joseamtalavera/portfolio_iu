@@ -1,160 +1,145 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-    AppBar,
-  Avatar,
+  Alert,
   Box,
-  Button,
-  Chip,
-  Container,
+  CircularProgress,
   Divider,
-  IconButton,
-  InputBase,
   List,
   ListItem,
-  ListItemButton,
-  ListItemIcon,
   ListItemText,
   Paper,
   Stack,
-  Toolbar,
   Typography,
-  Alert,
 } from "@mui/material";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import EventSeatIcon from "@mui/icons-material/EventSeat";
-import SettingsIcon from "@mui/icons-material/Settings";
-import SearchIcon from "@mui/icons-material/Search";
-import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import { DashboardLayout } from "@/components/dashboard-layout";
+import { User, MailItem } from "@/types";
+import { API_URL } from "@/config/constants";
 
-type MailItem = {
-    id: number;
-    subject: string;
-    message: string;
-    timestamp: string;
-}
+export default function MailboxPage() {
+  const router = useRouter();
+  const [ready, setReady] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [mail, setMail] = useState<MailItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-const navItems = [
-    { label: "Overview", icon: <DashboardIcon />, href: "/dashboard" },
-    { label: "Mailbox", icon: <MailOutlineIcon />, href: "/mailbox" },
-    { label: "Bookings", icon: <EventSeatIcon />, href: "/bookings" },
-    { label: "Profile", icon: <SettingsIcon />, href: "/profile" },
-    { label: "Log out", icon: <SettingsIcon />, href: "__logout__" },
-  ];
+  const handleLogout = () => {
+    localStorage.removeItem("jwt");
+    localStorage.removeItem("user");
+    router.push("/login");
+  };
 
-  export default function MailboxPage() {
-    const router = useRouter();
-    const [loaded, setLoaded] = useState(false);
-    // Store authenticated user data (name and email) - null if not loaded yet
-    const [user, setUser] = useState<{ name?: string; email?: string } | null>(null);
-    const [mail, setMail] = useState<MailItem[]>([]);
-    const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("jwt") : null;
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
 
-    // Handle navigation clicks - special case for logout, otherwise navigate to href
-    const handleNav = (href: string) => {
-        // If logout is clicked, clear authentication data and redirect to login
-        if (href === "__logout__") {
-            localStorage.removeItem("jwt");
-            localStorage.removeItem("user");
-            router.push("/login");
-            return;
+    const storedUser = typeof window !== "undefined" ? localStorage.getItem("user") : null;
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch {
+        localStorage.removeItem("user");
+      }
+    }
+
+    const loadMail = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(`${API_URL}/mailbox`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!response.ok) {
+          throw new Error("Failed to fetch mailbox items");
         }
-        // Navigate to the specified route
-        router.push(href);
+        const data = (await response.json()) as MailItem[];
+        setMail(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unable to load mailbox");
+      } finally {
+        setLoading(false);
+        setReady(true);
+      }
     };
 
-    useEffect(() => {
-        // Check authentication and redirect to login if no JWT token
-        const token = typeof window !== "undefined" ? localStorage.getItem("jwt") : null;
-        if (!token) {
-            router.replace("/login");
-            return;
-        }
-        const storedUser = typeof window !== "undefined" ? localStorage.getItem("user") : null;
-        if (storedUser) {
-            try {
-                setUser(JSON.parse(storedUser));
-            } catch {
-                console.error("Failed to parse user data:", error);
-                // Clear corrupted data if parsing fails
-                localStorage.removeItem("user");
-            }
-        }
+    loadMail();
+  }, [router]);
 
-        const loadMail = async () => {
-            try {
-                const response = await fetch(`${API_URL}/mailbox`, {
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                    });
-                if (!response.ok) {
-                    throw new Error("Failed to fetch mailbox items");
-                }
-                const data = await response.json();
-                setMail(data);
-            } catch (error) {
-                setError(erro instanceof Error? error.message : "An unknown error occurred");
-            } finally {
-                setLoaded(true);
-            }
-        };
+  if (!ready) return null;
 
-        loadMail();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [router]);
-
-    if (!loaded) return null;
-
-    return (
-        <Box sx={{ minHeight: "100vh", display: "flex", bgcolor: "#f4f7fb" }}>
-      {/* Sidebar */}
-      <Box
-        sx={{
-          width: 230,
-          bgcolor: "#fff",
-          borderRight: "1px solid #e5e7eb",
-          display: { xs: "none", md: "flex" },
-          flexDirection: "column",
-        }}
-      >
-        <Stack direction="row" alignItems="center" spacing={1.5} sx={{ p: 2 }}>
-          <Box sx={{ width: 10, height: 10, bgcolor: "#2ecc71", borderRadius: "50%" }} />
-          <Typography variant="h6" sx={{ fontWeight: 700, color: "#2ecc71" }}>
-            beworking
+  return (
+    <DashboardLayout
+      active="mailbox"
+      userName={user?.name}
+      userEmail={user?.email}
+      onLogout={handleLogout}
+      searchPlaceholder="Search mailbox"
+    >
+      <Stack spacing={3}>
+        <Box>
+          <Typography variant="h5" sx={{ fontWeight: 700 }}>
+            Mailbox
           </Typography>
-        </Stack>
-        <Divider />
-        <List sx={{ flex: 1 }}>
-          {navItems.map((item) => (
-            <ListItem key={item.label} disablePadding>
-              <ListItemButton
-                selected={item.href === "/mailbox"}
-                onClick={() => handleNav(item.href)}
-                sx={{
-                  borderRadius: 2,
-                  mx: 1,
-                  my: 0.5,
-                  "&.Mui-selected": { bgcolor: "#e8f6ef", color: "#2ecc71" },
-                }}
-              >
-                <ListItemIcon sx={{ color: item.href === "/mailbox" ? "#2ecc71" : "inherit" }}>
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText primary={item.label} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </Box>
+          <Typography variant="body2" color="text.secondary">
+            Latest messages from your mailbox.
+          </Typography>
+        </Box>
 
-      {/* Main Content */}
-      <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        {/* Top bar */}
-        
-      </Box>
+        {error && <Alert severity="error">{error}</Alert>}
 
-
-  }
+        {loading ? (
+          <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <>
+            {mail.length === 0 && !error ? (
+              <Paper sx={{ p: 3, borderRadius: 3 }}>
+                <Typography variant="body2" color="text.secondary">
+                  No messages yet.
+                </Typography>
+              </Paper>
+            ) : (
+              <Paper sx={{ borderRadius: 3, overflow: "hidden" }}>
+                <List disablePadding>
+                  {mail.map((item) => (
+                    <React.Fragment key={item.id}>
+                      <ListItem alignItems="flex-start" sx={{ py: 1.5, px: 2 }}>
+                        <ListItemText
+                          primary={
+                            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+                              {item.subject}
+                            </Typography>
+                          }
+                          secondary={
+                            <>
+                              <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                                {item.message}
+                              </Typography>
+                              <Typography variant="caption" color="text.secondary">
+                                {new Date(item.timestamp).toLocaleString()}
+                              </Typography>
+                            </>
+                          }
+                        />
+                      </ListItem>
+                      <Divider component="li" />
+                    </React.Fragment>
+                  ))}
+                </List>
+              </Paper>
+            )}
+          </>
+        )}
+      </Stack>
+    </DashboardLayout>
+  );
+}

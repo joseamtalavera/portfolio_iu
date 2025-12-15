@@ -43,8 +43,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081/api"; // API URL for the backend
+import { API_URL } from "@/config/constants";
 
 export default function Login() {
   const router = useRouter();

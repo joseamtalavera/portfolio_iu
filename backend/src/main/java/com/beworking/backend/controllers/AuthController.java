@@ -6,9 +6,11 @@ import com.beworking.backend.dto.AuthRegisterRequest;
 import com.beworking.backend.dto.AuthRegisterResponse;
 import com.beworking.backend.services.AuthService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -20,15 +22,15 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping("/register") //  Handles user registration requests.
-    @ResponseStatus(HttpStatus.CREATED) // Sets the HTTP status to 201 Created when a new user is registered.
-    public AuthRegisterResponse register (@Valid @RequestBody AuthRegisterRequest request) {
-        // Handles user registration by delegating to the AuthService.
-        return authService.register(request);
+    @PostMapping("/register")
+    public ResponseEntity<AuthRegisterResponse> register(@Valid @RequestBody AuthRegisterRequest request) {
+        AuthRegisterResponse response = authService.register(request);
+        return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/login") // Handles user login requests.
-    public AuthLoginResponse login (@Valid @RequestBody AuthLoginRequest request) {
-        return authService.login(request);
+    @PostMapping("/login")
+    public ResponseEntity<AuthLoginResponse> login(@Valid @RequestBody AuthLoginRequest request) {
+        AuthLoginResponse response = authService.login(request);
+        return ResponseEntity.ok(response);
     }
 }
