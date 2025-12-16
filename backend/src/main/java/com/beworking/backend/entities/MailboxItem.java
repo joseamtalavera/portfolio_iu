@@ -30,4 +30,7 @@ public class MailboxItem {
 
     @Column(nullable = false)
     private LocalDateTime timestamp;
+
+    @Column(nullable = true)
+    private String pdfUrl;
 }

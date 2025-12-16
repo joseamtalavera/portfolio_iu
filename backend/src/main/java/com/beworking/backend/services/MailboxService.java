@@ -23,7 +23,8 @@ public class MailboxService {
                         item.getId(),
                         item.getSubject(),
                         item.getMessage(),
-                        item.getTimestamp()
+                        item.getTimestamp(),
+                        item.getPdfUrl()
                 ))
                 .toList();
     }

@@ -8,5 +8,6 @@ export type MailItem = {
   subject: string;
   message: string;
   timestamp: string;
+  pdfUrl?: string;
 };
 

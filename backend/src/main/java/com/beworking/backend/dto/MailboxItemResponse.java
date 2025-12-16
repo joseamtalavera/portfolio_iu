@@ -6,5 +6,6 @@ public record MailboxItemResponse(
     Long id, 
     String subject,
     String message,
-    LocalDateTime timestamp
+    LocalDateTime timestamp,
+    String pdfUrl
 ) {}
