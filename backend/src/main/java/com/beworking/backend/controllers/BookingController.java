@@ -36,4 +36,11 @@ public class BookingController {
         User user = userService.getCurrentUser();
         return bookingService.listBookings(user);
     }
+
+    @DeleteMapping("/{bookingId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteBooking(@PathVariable Long bookingId) {
+        User user = userService.getCurrentUser();
+        bookingService.deleteBooking(user, bookingId);
+    }
 }

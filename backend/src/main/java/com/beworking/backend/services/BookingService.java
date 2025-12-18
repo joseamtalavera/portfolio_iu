@@ -7,6 +7,8 @@ import com.beworking.backend.entities.Booking;
 import com.beworking.backend.entities.User;
 import com.beworking.backend.repositories.BookingRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -30,6 +32,14 @@ public class BookingService {
                 .build();
         Booking saved = bookingRepository.save(booking);
         return new BookingCreatedResponse(saved.getId(), "Booking created successfully");
+    }
+
+    public void deleteBooking(User user, Long bookingId) {
+        // Find booking by ID and user ID using standard Spring Data JPA method
+        Booking booking = bookingRepository.findByIdAndUser_Id(bookingId, user.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Booking not found or you are not authorized to delete this booking"));
+        
+        bookingRepository.delete(booking);
     }
 
     public List<BookingResponse> listBookings(User user) {

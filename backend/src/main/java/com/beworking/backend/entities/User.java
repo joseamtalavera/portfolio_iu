@@ -23,4 +23,22 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+    // Fields for Stripe integration
+    @Column(nullable = true)
+    private String phone;
+    
+    @Column(nullable = true)
+    private String company;
+
+    @Column(nullable = true)
+    private String billingAddress;
+    @Column(nullable = true) 
+    private String billingCity;
+
+    @Column(nullable = true)
+    private String billingCountry;
+
+    @Column(nullable = true)    
+    private String billingPostalCode;
 }

@@ -1,5 +1,6 @@
 package com.beworking.backend.services;
 
+import com.beworking.backend.dto.ProfileUpdateRequest;
 import com.beworking.backend.dto.UserResponse;
 import com.beworking.backend.entities.User;
 import com.beworking.backend.repositories.UserRepository;
@@ -24,8 +25,45 @@ public class UserService {
 
     public UserResponse getCurrentUserProfile() {
         User user = getCurrentUser();
-        return new UserResponse(user.getId(), user.getName(), user.getEmail());
+        return new UserResponse(
+            user.getId(), 
+            user.getName(), 
+            user.getEmail(),
+            user.getPhone(),
+            user.getCompany(),
+            user.getBillingAddress(),
+            user.getBillingCity(),
+            user.getBillingCountry(),
+            user.getBillingPostalCode()
+        );
     }
+    public UserResponse updateProfile(User user, ProfileUpdateRequest request) {
+        // This will update the user profile
+        user.setName(request.name());
+        user.setPhone(request.phone());
+        user.setCompany(request.company());
+        user.setBillingAddress(request.billingAddress());
+        user.setBillingCity(request.billingCity());
+        user.setBillingCountry(request.billingCountry());
+        user.setBillingPostalCode(request.billingPostalCode());
+
+        // Save the updated user
+        User updatedUser = userRepository.save(user);
+
+        // Return the updated user profile
+        return new UserResponse(
+            updatedUser.getId(), 
+            updatedUser.getName(), 
+            updatedUser.getEmail(),
+            updatedUser.getPhone(),
+            updatedUser.getCompany(),
+            updatedUser.getBillingAddress(),
+            updatedUser.getBillingCity(),
+            updatedUser.getBillingCountry(),
+            updatedUser.getBillingPostalCode()
+        );
+    }
+
 
     // Method to retrieve the currently authenticated user
     // It fetches the user details from the security context and retrieves the user from the repository

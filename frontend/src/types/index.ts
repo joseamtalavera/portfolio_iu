@@ -11,3 +11,22 @@ export type MailItem = {
   pdfUrl?: string;
 };
 
+export type Booking = {
+  id: number;
+  product: string;
+  date: string;
+  startHour: string;
+  endHour: string;
+  attendees: number;
+};
+
+
+export type TimeSlot = {
+  label : string;
+  value : string;
+};
+
+export type RoomAvailability = {
+  room: string;
+  booked : string[];
+}

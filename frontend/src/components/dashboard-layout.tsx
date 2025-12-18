@@ -48,7 +48,6 @@ interface DashboardLayoutProps {
 export function DashboardLayout({
   active,
   userName,
-  userEmail,
   onLogout,
   children,
   searchPlaceholder = "Search…",
@@ -106,7 +105,15 @@ export function DashboardLayout({
       </Box>
 
       {/* Main Content */}
-      <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
+      <Box 
+        sx={{ 
+          flex: 1, 
+          display: "flex", 
+          flexDirection: "column",
+          minWidth: 0, // Allow flex item to shrink below content size
+          overflow: "hidden", // Prevent horizontal overflow
+        }}
+      >
         <AppBar position="static" elevation={0} sx={{ bgcolor: "#fff", color: "inherit", borderBottom: "1px solid #e5e7eb" }}>
           <Toolbar sx={{ gap: 2 }}>
             <Box sx={{ flex: 1, display: "flex", gap: 2, alignItems: "center" }}>
@@ -134,7 +141,18 @@ export function DashboardLayout({
           </Toolbar>
         </AppBar>
 
-        <Container maxWidth={false} sx={{ flex: 1, py: 3 }}>
+        <Container 
+          maxWidth={false} 
+          sx={{ 
+            flex: 1, 
+            py: 3, 
+            width: "100%", 
+            maxWidth: "100%", 
+            px: { xs: 2, sm: 3 },
+            overflow: "hidden", // Prevent horizontal overflow
+            boxSizing: "border-box",
+          }}
+        >
           {children}
         </Container>
       </Box>
