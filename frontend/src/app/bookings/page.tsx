@@ -400,10 +400,8 @@ export default function BookingsPage() {
   return (
     <DashboardLayout
       active="bookings"
-      userName={user?.name}
-      userEmail={user?.email}
+      user={user}
       onLogout={handleLogout}
-      searchPlaceholder="Search bookings"
     >
       <Stack spacing={3} sx={{ width: "100%", maxWidth: "100%" }}>
         <Box>

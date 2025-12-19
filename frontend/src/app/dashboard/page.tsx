@@ -29,7 +29,7 @@ export default function DashboardContent() {
     const storedUser = typeof window !== "undefined" ? localStorage.getItem("user") : null;
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser));
+        setUser(JSON.parse(storedUser) as User);
       } catch {
         /* ignore parse errors */
       }
@@ -48,10 +48,8 @@ export default function DashboardContent() {
   return (
     <DashboardLayout
       active="dashboard"
-      userName={user?.name}
-      userEmail={user?.email}
+      user={user}
       onLogout={handleLogout}
-      searchPlaceholder="Search tenants, rooms, automations"
     >
       <Stack spacing={3}>
         <Box>

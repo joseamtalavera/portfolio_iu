@@ -1,6 +1,13 @@
 export type User = {
+  id?: number;
   name?: string;
   email?: string;
+  phone?: string;
+  company?: string;
+  billingAddress?: string;
+  billingCity?: string;
+  billingCountry?: string;
+  billingPostalCode?: string;
 };
 
 export type MailItem = {

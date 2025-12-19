@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   AppBar,
@@ -7,14 +8,11 @@ import {
   Box,
   Container,
   Divider,
-  IconButton,
-  InputBase,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Paper,
   Stack,
   Toolbar,
   Typography,
@@ -23,8 +21,10 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import EventSeatIcon from "@mui/icons-material/EventSeat";
 import SettingsIcon from "@mui/icons-material/Settings";
-import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
-import SearchIcon from "@mui/icons-material/Search";
+import ProfileModal from "@/components/profileModal";
+import { User } from "@/types";
+import { API_URL } from "@/config/constants";
+
 
 type NavKey = "dashboard" | "mailbox" | "bookings" | "profile" | "__logout__";
 
@@ -37,30 +37,70 @@ const navItems: { key: NavKey; label: string; icon: React.ReactNode; href?: stri
 ];
 
 interface DashboardLayoutProps {
-  active: NavKey;
-  userName?: string;
-  userEmail?: string;
-  onLogout: () => void;
-  children: React.ReactNode;
-  searchPlaceholder?: string;
+  active: NavKey; // active navigation item. Only one of the navItems keys can be active at a time.
+  user?: User | null; // authenticated user data
+  onLogout: () => void; // callback function to handle logout
+  children: React.ReactNode; // child components to be rendered in the main content area
 }
 
 export function DashboardLayout({
   active,
-  userName,
+  user,
   onLogout,
   children,
-  searchPlaceholder = "Search…",
 }: DashboardLayoutProps) {
   const router = useRouter();
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(user || null);
+
+  useEffect(() => {
+    if (profileModalOpen) {
+      const fetchUserProfile = async () => {
+        const token = localStorage.getItem("jwt");
+        if (!token) return;
+
+        try {
+          const response = await fetch(`${API_URL}/user/me`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (response.ok) {
+            const userData = await response.json() as User;
+            setCurrentUser(userData);
+            localStorage.setItem("user", JSON.stringify(userData));
+          }
+        } catch (err) {
+          console.error("Error fetching user profile:", err);
+        }
+      };
+
+      fetchUserProfile();
+    }
+  }, [profileModalOpen]);
 
   const handleNav = (item: typeof navItems[number]) => {
     if (item.key === "__logout__") {
       onLogout();
       return;
     }
+    // Open modal for profile when clicking on profile item
+    if (item.key === "profile") {
+      setProfileModalOpen(true);
+      return;
+    }
     if (item.href) router.push(item.href);
   };
+
+  const handleAvatarClick = () => {
+    setProfileModalOpen(true);
+  };
+  const handleProfileUpdate = (updatedUser: User) => {
+    setCurrentUser(updatedUser);
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+  };
+
 
   return (
     <Box sx={{ minHeight: "100vh", display: "flex", bgcolor: "#f4f7fb" }}>
@@ -115,28 +155,12 @@ export function DashboardLayout({
         }}
       >
         <AppBar position="static" elevation={0} sx={{ bgcolor: "#fff", color: "inherit", borderBottom: "1px solid #e5e7eb" }}>
-          <Toolbar sx={{ gap: 2 }}>
-            <Box sx={{ flex: 1, display: "flex", gap: 2, alignItems: "center" }}>
-              <Paper
-                sx={{
-                  p: "4px 8px",
-                  display: "flex",
-                  alignItems: "center",
-                  width: 320,
-                  border: "1px solid #e5e7eb",
-                }}
-              >
-                <IconButton size="small">
-                  <SearchIcon />
-                </IconButton>
-                <InputBase sx={{ ml: 1, flex: 1 }} placeholder={searchPlaceholder} />
-              </Paper>
-            </Box>
-            <IconButton>
-              <NotificationsNoneIcon />
-            </IconButton>
-            <Avatar sx={{ bgcolor: "#2ecc71" }}>
-              {(userName ?? "U").charAt(0).toUpperCase()}
+          <Toolbar sx={{ justifyContent: "flex-end" }}>
+            <Avatar 
+              sx={{ bgcolor: "#2ecc71", cursor: "pointer" }}
+              onClick={handleAvatarClick}
+            >
+              {(user?.name ?? "U").charAt(0).toUpperCase()}
             </Avatar>
           </Toolbar>
         </AppBar>
@@ -156,6 +180,12 @@ export function DashboardLayout({
           {children}
         </Container>
       </Box>
+      <ProfileModal
+        open={profileModalOpen}
+        onClose={() => setProfileModalOpen(false)}
+        user={currentUser || user || null}
+        onUpdate={handleProfileUpdate}
+      />
     </Box>
   );
 }

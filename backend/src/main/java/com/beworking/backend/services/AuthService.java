@@ -57,7 +57,17 @@ public class AuthService {
             User user = userRepository.findByEmail(request.email())
                     .orElseThrow(() -> new ResponseStatusException(UNAUTHORIZED, "Invalid credentials"));
             String token = jwtUtil.generateToken(user.getEmail(), user.getId());
-            return new AuthLoginResponse(token, new UserResponse(user.getId(), user.getName(), user.getEmail()));
+            return new AuthLoginResponse(token, new UserResponse(
+                user.getId(), 
+                user.getName(), 
+                user.getEmail(), 
+                user.getPhone(), 
+                user.getCompany(), 
+                user.getBillingAddress(), 
+                user.getBillingCity(), 
+                user.getBillingCountry(), 
+                user.getBillingPostalCode()
+            ));
         } catch (Exception ex) {
             throw new ResponseStatusException(UNAUTHORIZED, "Invalid credentials");
         }

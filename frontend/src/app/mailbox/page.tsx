@@ -86,10 +86,8 @@ export default function MailboxPage() {
   return (
     <DashboardLayout
       active="mailbox"
-      userName={user?.name}
-      userEmail={user?.email}
+      user={user}
       onLogout={handleLogout}
-      searchPlaceholder="Search mailbox"
     >
       <Stack spacing={3}> {/* Spacing between the components */}
         <Box>
