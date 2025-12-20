@@ -424,9 +424,25 @@ export default function BookingsPage() {
             overflow: "hidden", // Prevent overflow
           }}
         >
-          <Tabs value={tab} onChange={(_, v) => setTab(v)} variant="scrollable" scrollButtons="auto">
-            <Tab label="Calendar" />
-            <Tab label="Bookings" />
+          <Tabs 
+            value={tab} 
+            onChange={(_, v) => setTab(v)} 
+            variant="scrollable" 
+            scrollButtons="auto"
+            sx={{
+              "& .MuiTab-root": {
+                color: "#6b7280",
+                "&.Mui-selected": {
+                  color: "#2ecc71",
+                },
+              },
+              "& .MuiTabs-indicator": {
+                backgroundColor: "#2ecc71",
+              },
+            }}
+          >
+            <Tab label="calendar" />
+            <Tab label="bookings" />
           </Tabs>
           <Box 
             sx={{ 
@@ -515,7 +531,22 @@ export default function BookingsPage() {
                     fullWidth
                   />
                 </Box>
-                <Button sx={{ mt: 2 }} type="submit" variant="contained" disabled={submitting}>
+                <Button 
+                  sx={{ 
+                    mt: 2,
+                    textTransform: "none",
+                    bgcolor: "#2ecc71",
+                    "&:hover": {
+                      bgcolor: "#27ae60",
+                    },
+                    "&:disabled": {
+                      bgcolor: "#a0a0a0",
+                    },
+                  }} 
+                  type="submit" 
+                  variant="contained" 
+                  disabled={submitting}
+                >
                   {submitting ? "Creating..." : "Create Booking"}
                 </Button>
               </Paper>
@@ -594,8 +625,18 @@ export default function BookingsPage() {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setSuccessDialogOpen(false)} variant="contained" color="primary">
-            OK
+          <Button 
+            onClick={() => setSuccessDialogOpen(false)} 
+            variant="contained"
+            sx={{
+              textTransform: "none",
+              bgcolor: "#2ecc71",
+              "&:hover": {
+                bgcolor: "#27ae60",
+              },
+            }}
+          >
+            Ok
           </Button>
         </DialogActions>
       </Dialog>
@@ -609,8 +650,18 @@ export default function BookingsPage() {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setConflictDialogOpen(false)} variant="contained" color="primary">
-            OK
+          <Button 
+            onClick={() => setConflictDialogOpen(false)} 
+            variant="contained"
+            sx={{
+              textTransform: "none",
+              bgcolor: "#2ecc71",
+              "&:hover": {
+                bgcolor: "#27ae60",
+              },
+            }}
+          >
+            Ok
           </Button>
         </DialogActions>
       </Dialog>
@@ -627,13 +678,22 @@ export default function BookingsPage() {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => {
-            setDeleteConfirmDialogOpen(false);
-            setBookingToDelete(null);
-          }} color="inherit">
+          <Button 
+            onClick={() => {
+              setDeleteConfirmDialogOpen(false);
+              setBookingToDelete(null);
+            }} 
+            sx={{ textTransform: "none" }}
+            color="inherit"
+          >
             Cancel
           </Button>
-          <Button onClick={handleDeleteConfirm} variant="contained" color="error">
+          <Button 
+            onClick={handleDeleteConfirm} 
+            variant="contained" 
+            color="error"
+            sx={{ textTransform: "none" }}
+          >
             Delete
           </Button>
         </DialogActions>
@@ -648,8 +708,18 @@ export default function BookingsPage() {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteSuccessDialogOpen(false)} variant="contained" color="primary">
-            OK
+          <Button 
+            onClick={() => setDeleteSuccessDialogOpen(false)} 
+            variant="contained"
+            sx={{
+              textTransform: "none",
+              bgcolor: "#2ecc71",
+              "&:hover": {
+                bgcolor: "#27ae60",
+              },
+            }}
+          >
+            Ok
           </Button>
         </DialogActions>
       </Dialog>

@@ -17,10 +17,11 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import DashboardIcon from "@mui/icons-material/Dashboard";
+import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import EventSeatIcon from "@mui/icons-material/EventSeat";
-import SettingsIcon from "@mui/icons-material/Settings";
+import EventNoteOutlinedIcon from "@mui/icons-material/EventNoteOutlined";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import ProfileModal from "@/components/profileModal";
 import { User } from "@/types";
 import { API_URL } from "@/config/constants";
@@ -29,11 +30,11 @@ import { API_URL } from "@/config/constants";
 type NavKey = "dashboard" | "mailbox" | "bookings" | "profile" | "__logout__";
 
 const navItems: { key: NavKey; label: string; icon: React.ReactNode; href?: string }[] = [
-  { key: "dashboard", label: "Overview", icon: <DashboardIcon />, href: "/dashboard" },
+  { key: "dashboard", label: "Overview", icon: <DashboardOutlinedIcon />, href: "/dashboard" },
   { key: "mailbox", label: "Mailbox", icon: <MailOutlineIcon />, href: "/mailbox" },
-  { key: "bookings", label: "Bookings", icon: <EventSeatIcon />, href: "/bookings" },
-  { key: "profile", label: "Profile", icon: <SettingsIcon />, href: "/profile" },
-  { key: "__logout__", label: "Log out", icon: <SettingsIcon /> },
+  { key: "bookings", label: "Bookings", icon: <EventNoteOutlinedIcon />, href: "/bookings" },
+  { key: "profile", label: "Profile", icon: <PersonOutlineIcon />, href: "/profile" },
+  { key: "__logout__", label: "Log out", icon: <LogoutOutlinedIcon /> },
 ];
 
 interface DashboardLayoutProps {
@@ -134,10 +135,18 @@ export function DashboardLayout({
                   "&.Mui-selected": { bgcolor: "#e8f6ef", color: "#2ecc71" },
                 }}
               >
-                <ListItemIcon sx={{ color: item.key === active ? "#2ecc71" : "inherit" }}>
+                <ListItemIcon sx={{ color: item.key === active ? "#2ecc71" : "#6b7280" }}>
                   {item.icon}
                 </ListItemIcon>
-                <ListItemText primary={item.label} />
+                <ListItemText 
+                  primary={item.label}
+                  sx={{ 
+                    color: item.key === active ? "#2ecc71" : "#6b7280",
+                    "& .MuiListItemText-primary": {
+                      color: item.key === active ? "#2ecc71" : "#6b7280",
+                    }
+                  }}
+                />
               </ListItemButton>
             </ListItem>
           ))}

@@ -137,8 +137,18 @@ export default function MailboxPage() {
                           }
                         />
                         <Button
-                          variant="outlined" // Button is a container for the mailbox items
-                          size="small" // Size of the button (small, medium, large)
+                          variant="outlined"
+                          size="small"
+                          sx={{
+                            textTransform: "none",
+                            borderColor: "#2ecc71",
+                            color: "#2ecc71",
+                            "&:hover": {
+                              borderColor: "#27ae60",
+                              color: "#27ae60",
+                              bgcolor: "#e8f6ef",
+                            },
+                          }}
                           onClick={() => {
                             if (!item.pdfUrl) {
                               setAttachmentError("No attachment available for this message.");
@@ -175,9 +185,29 @@ export default function MailboxPage() {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setPdfOpen(false)}>Close</Button>
-            <Button href={pdfUrl} target="_blank" rel="noreferrer" variant="outlined">
-              Open in new tab
+            <Button 
+              onClick={() => setPdfOpen(false)}
+              sx={{ textTransform: "none" }}
+            >
+              Close
+            </Button>
+            <Button 
+              href={pdfUrl} 
+              target="_blank" 
+              rel="noreferrer" 
+              variant="outlined"
+              sx={{
+                textTransform: "none",
+                borderColor: "#2ecc71",
+                color: "#2ecc71",
+                "&:hover": {
+                  borderColor: "#27ae60",
+                  color: "#27ae60",
+                  bgcolor: "#e8f6ef",
+                },
+              }}
+            >
+              Open In New Tab
             </Button>
           </DialogActions>
         </Dialog>

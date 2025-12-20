@@ -398,7 +398,7 @@ export default function ProfileModal({ open, onClose, user, onUpdate }: ProfileM
                             }
                         }}
                     >
-                        OK
+                        Ok
                     </Button>
                 </DialogActions>
             </Dialog>
