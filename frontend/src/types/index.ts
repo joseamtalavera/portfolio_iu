@@ -8,6 +8,7 @@ export type User = {
   billingCity?: string;
   billingCountry?: string;
   billingPostalCode?: string;
+  subscriptionStatus?: string;
 };
 
 export type MailItem = {

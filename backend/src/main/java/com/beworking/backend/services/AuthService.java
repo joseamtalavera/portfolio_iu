@@ -66,7 +66,8 @@ public class AuthService {
                 user.getBillingAddress(), 
                 user.getBillingCity(), 
                 user.getBillingCountry(), 
-                user.getBillingPostalCode()
+                user.getBillingPostalCode(),
+                user.getSubscriptionStatus()
             ));
         } catch (Exception ex) {
             throw new ResponseStatusException(UNAUTHORIZED, "Invalid credentials");

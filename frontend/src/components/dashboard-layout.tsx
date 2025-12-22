@@ -25,6 +25,7 @@ import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import ProfileModal from "@/components/profileModal";
 import { User } from "@/types";
 import { API_URL } from "@/config/constants";
+import PaymentModal from "./paymentModal";
 
 
 type NavKey = "dashboard" | "mailbox" | "bookings" | "profile" | "__logout__";
@@ -53,6 +54,8 @@ export function DashboardLayout({
   const router = useRouter();
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(user || null);
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false); // Array destructuring useState returns an array with two elements: useState(false) → [stateValue, setterFunction]
+
 
   useEffect(() => {
     if (profileModalOpen) {
@@ -81,6 +84,16 @@ export function DashboardLayout({
     }
   }, [profileModalOpen]);
 
+  useEffect(() => {
+    // Check if user has an INACTIVE subscription status
+    if (currentUser && currentUser?.subscriptionStatus === "INACTIVE") {
+      setPaymentModalOpen(true); // the modal open and offer the user to pay for the subscription
+    } else {
+      setPaymentModalOpen(false);
+    }
+  }, [currentUser?.subscriptionStatus]);
+
+
   const handleNav = (item: typeof navItems[number]) => {
     if (item.key === "__logout__") {
       onLogout();
@@ -97,10 +110,37 @@ export function DashboardLayout({
   const handleAvatarClick = () => {
     setProfileModalOpen(true);
   };
+
   const handleProfileUpdate = (updatedUser: User) => {
     setCurrentUser(updatedUser);
     localStorage.setItem("user", JSON.stringify(updatedUser));
   };
+
+  // Add a handler for payment success
+  const handlePaymentSuccess = async () => {
+    // Refresh user data after successful payment
+    const token = localStorage.getItem("jwt");
+    if (!token) return;
+
+    try {
+      const response = await fetch(`${API_URL}/user/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const userData = await response.json() as User;
+        setCurrentUser(userData);
+        localStorage.setItem("user", JSON.stringify(userData));
+        setPaymentModalOpen(false);
+      }
+    } catch (err) {
+        console.error("Error fetching user profile after payment", err);
+    }
+  };
+
+
 
 
   return (
@@ -195,6 +235,13 @@ export function DashboardLayout({
         user={currentUser || user || null}
         onUpdate={handleProfileUpdate}
       />
+      <PaymentModal
+          open={paymentModalOpen}
+          onClose={() => {
+            setPaymentModalOpen(false);
+          }}
+          onSuccess={handlePaymentSuccess}
+        />
     </Box>
   );
 }

@@ -2,6 +2,7 @@ package com.beworking.backend.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
@@ -24,6 +25,24 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    // Subscription fields
+    @Column(nullable = false, columnDefinition = "varchar(255) default 'INACTIVE'")
+    @Builder.Default
+    private String subscriptionStatus = "INACTIVE"; // INACTIVE, ACTIVE, CANCELLED, EXPIRED, These are the only valid values for the subscription status.
+
+    @Column(nullable = true)
+    private String stripeCustomerId;
+
+    @Column(nullable = true)
+    private String stripeSubscriptionId;
+
+    @Column(nullable = true)
+    private LocalDateTime subscriptionStartDate;
+
+    @Column(nullable = true)
+    private LocalDateTime subscriptionEndDate;
+
+
     // Fields for Stripe integration
     @Column(nullable = true)
     private String phone;
@@ -41,4 +60,11 @@ public class User {
 
     @Column(nullable = true)    
     private String billingPostalCode;
+
+    @PrePersist
+    void ensureSubscriptionStatus() {
+        if (subscriptionStatus == null) {
+            subscriptionStatus = "INACTIVE";
+        }
+    }
 }

@@ -10,5 +10,6 @@ public record UserResponse(
     String billingAddress, 
     String billingCity,
     String billingCountry,
-    String billingPostalCode
+    String billingPostalCode,
+    String subscriptionStatus
 ) {}

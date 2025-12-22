@@ -1,12 +1,8 @@
-import type { Metadata } from "next";
+"use client";
+
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import { theme } from "../theme";
 import "./globals.css";
-
-export const metadata: Metadata = {
-  title: "BeWorking",
-  description: "BeWorking is a Virtual Office platform for startups and freelancers",
-};
 
 export default function RootLayout({
   children,

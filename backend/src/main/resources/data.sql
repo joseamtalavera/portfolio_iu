@@ -1,10 +1,11 @@
 -- Tutor use with password: "tutor1234"
 
-INSERT INTO users (name, email, password) 
+INSERT INTO users (name, email, password, subscription_status) 
 VALUES (
     'Tutor',
     'tutor@be-working.com',
-    '$2b$10$qIg9sIH4IcV7JbvQC1GJZ.mwV2MUseIg.YONAd07VRLXmTEM7tlzC' -- bcrypt("tutor1234")
+    '$2b$10$qIg9sIH4IcV7JbvQC1GJZ.mwV2MUseIg.YONAd07VRLXmTEM7tlzC', -- bcrypt("tutor1234")
+    'INACTIVE'
 )
 ON CONFLICT (email) DO NOTHING;
 

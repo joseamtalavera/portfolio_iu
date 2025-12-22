@@ -34,7 +34,8 @@ public class UserService {
             user.getBillingAddress(),
             user.getBillingCity(),
             user.getBillingCountry(),
-            user.getBillingPostalCode()
+            user.getBillingPostalCode(),
+            user.getSubscriptionStatus()
         );
     }
     public UserResponse updateProfile(User user, ProfileUpdateRequest request) {
@@ -60,7 +61,8 @@ public class UserService {
             updatedUser.getBillingAddress(),
             updatedUser.getBillingCity(),
             updatedUser.getBillingCountry(),
-            updatedUser.getBillingPostalCode()
+            updatedUser.getBillingPostalCode(),
+            updatedUser.getSubscriptionStatus()
         );
     }
 

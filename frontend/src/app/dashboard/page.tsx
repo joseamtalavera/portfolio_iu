@@ -106,7 +106,7 @@ export default function DashboardContent() {
     const bookingsRemaining = Math.max(0, 5 - bookingsThisMonth);
 
     // Status of virtual office // assume active till stripe payment is set up
-    const status = "active";
+    const status = user?.subscriptionStatus?.toLocaleLowerCase() || "inactive";
     return {
       deliveriesToday,
       deliveriesThisMonth,
@@ -114,7 +114,7 @@ export default function DashboardContent() {
       bookingsRemaining,
       status,
     };
-  }, [bookings, mailbox]);
+  }, [bookings, mailbox, user?.subscriptionStatus]);
 
   // Get the upcoming bookings
   const upcomingBookings = useMemo(() => {
@@ -194,11 +194,11 @@ export default function DashboardContent() {
                   {card.isStatus ? (
                     <Chip 
                       label={card.value}
-                      color="success"
+                      color={stats.status === "active" ? "success" : "default"}
                       sx={{
                         mt: 1,
                         fontWeight:600,
-                        bgcolor: "#2ecc71",
+                        bgcolor: stats.status === "active" ? "#2ecc71" : "#6b7280",
                         color: "#fff",
                       }}
                     />
