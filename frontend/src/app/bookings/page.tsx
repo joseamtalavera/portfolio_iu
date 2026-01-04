@@ -29,6 +29,7 @@ import { Availability } from "@/components/availability";
 import { API_URL } from "@/config/constants";
 import { Booking, RoomAvailability, TimeSlot, User } from "@/types";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { parseTimeToMinutes } from "@/utils/timeUtils";
 
 function TabPanel({ value, index, children }: { value: number; index: number; children: React.ReactNode }) {
   return value === index ? <Box sx={{ pt: 2 }}>{children}</Box> : null;
@@ -76,14 +77,9 @@ export default function BookingsPage() {
     const bookedSlots: string[] = [];
     dateBookings.forEach((booking) => {
       if (booking.product === "Meeting Room") {
-        // Parse time, handling both HH:MM and HH:MM:SS formats
-        const parseTime = (timeStr: string) => {
-          const parts = timeStr.split(':').map(Number);
-          return parts[0] * 60 + (parts[1] || 0); // Ignore seconds if present
-        };
         
-        const startMinutes = parseTime(booking.startHour);
-        const endMinutes = parseTime(booking.endHour);
+        const startMinutes = parseTimeToMinutes(booking.startHour);
+        const endMinutes = parseTimeToMinutes(booking.endHour);
         
         // Round start to nearest 30-minute slot (round down)
         const roundedStart = Math.floor(startMinutes / 30) * 30;
@@ -194,13 +190,9 @@ export default function BookingsPage() {
     const bookedSlots = new Set<string>();
     dateBookings.forEach((booking) => {
       if (booking.product === "Meeting Room") {
-        const parseTime = (timeStr: string) => {
-          const parts = timeStr.split(':').map(Number);
-          return parts[0] * 60 + (parts[1] || 0);
-        };
         
-        const startMinutes = parseTime(booking.startHour);
-        const endMinutes = parseTime(booking.endHour);
+        const startMinutes = parseTimeToMinutes(booking.startHour);
+        const endMinutes = parseTimeToMinutes(booking.endHour);
         const roundedStart = Math.floor(startMinutes / 30) * 30;
         const roundedEnd = Math.ceil(endMinutes / 30) * 30;
         
@@ -280,19 +272,15 @@ export default function BookingsPage() {
     });
     
     // Parse time strings to minutes for comparison
-    const parseTime = (timeStr: string): number => {
-      const parts = timeStr.split(':').map(Number);
-      return parts[0] * 60 + (parts[1] || 0);
-    };
     
-    const newStart = parseTime(startHour);
-    const newEnd = parseTime(endHour);
+    const newStart = parseTimeToMinutes(startHour);
+    const newEnd = parseTimeToMinutes(endHour);
     
     // Check for overlap with existing bookings
     for (const booking of dateBookings) {
       if (booking.product === "Meeting Room") {
-        const existingStart = parseTime(booking.startHour);
-        const existingEnd = parseTime(booking.endHour);
+        const existingStart = parseTimeToMinutes(booking.startHour);
+        const existingEnd = parseTimeToMinutes(booking.endHour);
         
         // Check if time ranges overlap
         if (newStart < existingEnd && newEnd > existingStart) {

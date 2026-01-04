@@ -36,14 +36,21 @@ import { useRouter } from "next/navigation";
 import {
   Alert,
   Box,
-  Button, 
-  Container, 
-  Paper, 
-  Stack, 
+  Button,
+  Container,
+  Paper,
+  Stack,
   TextField,
   Typography,
+  AppBar,
+  Toolbar,
 } from "@mui/material";
 import { API_URL } from "@/config/constants";
+
+const brandGreen = "#2ecc71";
+const brandDark = "#2f3b46";
+const brandMuted = "#6b747d";
+const bgLight = "#f6f8fb";
 
 export default function Login() {
   const router = useRouter();
@@ -160,59 +167,174 @@ export default function Login() {
       router.push("/dashboard");
     } catch {
       setError("Network error. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
+  } finally {
+    setLoading(false);
   }
+}
 
   return (
-    <Container maxWidth="sm" sx={{ py: 6 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          Login
-        </Typography>
-        <Typography variant="body2" sx={{ mb: 3 }}>
-          Access your BeWorking account.
-        </Typography>
-
-        <Box component="form" onSubmit={handleSubmit}>
-          <Stack spacing={2}>
-            {error && <Alert severity="error">{error}</Alert>}
-
-            <TextField
-              label="Email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              fullWidth
+    <Box sx={{ minHeight: "100vh", bgcolor: bgLight, color: brandDark, display: "flex", flexDirection: "column" }}>
+      <AppBar
+        position="static"
+        elevation={0}
+        sx={{
+          bgcolor: "#fff",
+          color: brandDark,
+          borderBottom: "1px solid #eef1f4",
+          py: 0.5,
+        }}
+      >
+        <Container maxWidth="lg">
+          <Toolbar
+            disableGutters
+            sx={{
+              minHeight: 64,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <Box
+              component="img"
+              src="/beworking_logo_h40_3x.png"
+              alt="BeWorking"
+              sx={{ height: 40, width: "auto", display: "block" }}
             />
-            <TextField
-              label="Password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              fullWidth
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={loading}
-              sx={{ mt: 1 }}
-            >
-              {loading ? "Logging in..." : "Login"}
-            </Button>
-            <Button
-              variant="text"
-              onClick={() => router.push("/")}
-              disabled={loading}
-            >
-              Need an account? Register
-            </Button>
+
+            <Stack direction="row" alignItems="center" spacing={3}>
+              <Button
+                variant="outlined"
+                sx={{
+                  borderColor: brandGreen,
+                  color: brandGreen,
+                  textTransform: "none",
+                  fontWeight: 700,
+                  borderRadius: 1.2,
+                  px: 2.8,
+                  py: 1,
+                  "&:hover": { borderColor: brandGreen, bgcolor: "rgba(39,179,106,0.08)" },
+                }}
+                onClick={() => router.push("/")}
+              >
+                CLIENT ACCESS
+              </Button>
+            </Stack>
+          </Toolbar>
+        </Container>
+      </AppBar>
+
+      <Container
+        maxWidth="sm"
+        sx={{
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          py: { xs: 4, md: 8 },
+        }}
+      >
+        <Paper
+          elevation={6}
+          sx={{
+            p: { xs: 3, md: 4 },
+            borderRadius: 3,
+            width: "100%",
+            boxShadow: "0 12px 28px rgba(0,0,0,0.08)",
+          }}
+        >
+          <Stack spacing={1.5} sx={{ mb: 2 }}>
+            <Typography variant="h5" sx={{ fontWeight: 800, color: brandDark }}>
+              Welcome back
+            </Typography>
+            <Typography variant="body2" sx={{ color: brandMuted }}>
+              Login to access your BeWorking account.
+            </Typography>
           </Stack>
-        </Box>
-      </Paper>
-    </Container>
+
+          <Box component="form" onSubmit={handleSubmit}>
+            <Stack spacing={2.4}>
+              {error && <Alert severity="error">{error}</Alert>}
+
+              <TextField
+                placeholder="Email Address"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                fullWidth
+                InputProps={{ sx: { bgcolor: "#f9fafb", borderRadius: 1.2 } }}
+              />
+              <TextField
+                placeholder="Password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                fullWidth
+                InputProps={{ sx: { bgcolor: "#f9fafb", borderRadius: 1.2 } }}
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={loading}
+                sx={{
+                  bgcolor: brandGreen,
+                  textTransform: "none",
+                  fontWeight: 800,
+                  fontSize: "0.95rem",
+                  py: 1.3,
+                  borderRadius: 1.2,
+                  boxShadow: "0 8px 18px rgba(39,179,106,0.25)",
+                  "&:hover": { bgcolor: "#27ae60", boxShadow: "0 10px 20px rgba(39,179,106,0.3)" },
+                }}
+              >
+                {loading ? "Logging in..." : "Login"}
+              </Button>
+              <Button
+                variant="text"
+                onClick={() => router.push("/")}
+                disabled={loading}
+                sx={{ textTransform: "none", fontWeight: 600 }}
+              >
+                Need an account? Register
+              </Button>
+            </Stack>
+          </Box>
+        </Paper>
+      </Container>
+
+      <Box
+        sx={{
+          borderTop: "1px solid #e6e9ed",
+          bgcolor: "#fff",
+          py: 4,
+          mt: { xs: 4, md: 2 },
+        }}
+      >
+        <Container maxWidth="lg">
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            alignItems="center"
+            justifyContent="space-between"
+            spacing={2}
+          >
+            <Typography sx={{ color: brandMuted, fontSize: "0.85rem" }}>
+              © 2024 BEWORKING MÁLAGA — ACADEMIC PROJECT
+            </Typography>
+            <Stack direction="row" spacing={3}>
+              <Typography sx={{ color: brandMuted, fontSize: "0.85rem" }}>
+                TERMS & CONDITIONS
+              </Typography>
+              <Typography sx={{ color: brandMuted, fontSize: "0.85rem" }}>
+                PRIVACY POLICY
+              </Typography>
+              <Typography sx={{ color: brandMuted, fontSize: "0.85rem" }}>
+                ACCESSIBILITY
+              </Typography>
+            </Stack>
+          </Stack>
+        </Container>
+      </Box>
+    </Box>
   );
 }

@@ -12,7 +12,7 @@ export default function RootLayout({
       <body>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          {children}
+        {children}
         </ThemeProvider>
       </body>
     </html>

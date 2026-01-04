@@ -133,8 +133,7 @@ public class SubscriptionService {
                     handleSubscriptionDeleted(event);
                     break;
                 default:
-                    // log unhandled event types
-                    System.out.println("Unhandled event type: " + event.getType());
+                    break;
             }
         } catch (SignatureVerificationException e) {
             throw new ResponseStatusException(BAD_REQUEST, "Invalid webhook signature");
