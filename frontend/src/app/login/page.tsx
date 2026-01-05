@@ -33,27 +33,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Alert,
-  Box,
-  Button,
-  Container,
-  Paper,
-  Stack,
-  TextField,
-  Typography,
-  AppBar,
-  Toolbar,
-} from "@mui/material";
+import { Alert, Box, Button, Container, Paper, Stack, TextField, Typography } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import { FrontLayout } from "@/components/FrontLayout";
 import { API_URL } from "@/config/constants";
-
-const brandGreen = "#2ecc71";
-const brandDark = "#2f3b46";
-const brandMuted = "#6b747d";
-const bgLight = "#f6f8fb";
 
 export default function Login() {
   const router = useRouter();
+  const theme = useTheme();
   const [email, setEmail] = useState(""); // State stores the value of the email input field
   const [password, setPassword] = useState(""); // State stores the value of the password input field
   const [error, setError] = useState<string | null>(null); // Error message to display to the user when login fails
@@ -173,56 +160,7 @@ export default function Login() {
 }
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: bgLight, color: brandDark, display: "flex", flexDirection: "column" }}>
-      <AppBar
-        position="static"
-        elevation={0}
-        sx={{
-          bgcolor: "#fff",
-          color: brandDark,
-          borderBottom: "1px solid #eef1f4",
-          py: 0.5,
-        }}
-      >
-        <Container maxWidth="lg">
-          <Toolbar
-            disableGutters
-            sx={{
-              minHeight: 64,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <Box
-              component="img"
-              src="/beworking_logo_h40_3x.png"
-              alt="BeWorking"
-              sx={{ height: 40, width: "auto", display: "block" }}
-            />
-
-            <Stack direction="row" alignItems="center" spacing={3}>
-              <Button
-                variant="outlined"
-                sx={{
-                  borderColor: brandGreen,
-                  color: brandGreen,
-                  textTransform: "none",
-                  fontWeight: 700,
-                  borderRadius: 1.2,
-                  px: 2.8,
-                  py: 1,
-                  "&:hover": { borderColor: brandGreen, bgcolor: "rgba(39,179,106,0.08)" },
-                }}
-                onClick={() => router.push("/")}
-              >
-                CLIENT ACCESS
-              </Button>
-            </Stack>
-          </Toolbar>
-        </Container>
-      </AppBar>
-
+    <FrontLayout ctaLabel="CLIENT ACCESS" ctaHref="/" hideCta>
       <Container
         maxWidth="sm"
         sx={{
@@ -243,10 +181,10 @@ export default function Login() {
           }}
         >
           <Stack spacing={1.5} sx={{ mb: 2 }}>
-            <Typography variant="h5" sx={{ fontWeight: 800, color: brandDark }}>
+            <Typography variant="h5" sx={{ fontWeight: 800, color: theme.palette.brand.dark }}>
               Welcome back
             </Typography>
-            <Typography variant="body2" sx={{ color: brandMuted }}>
+            <Typography variant="body2" sx={{ color: theme.palette.brand.muted }}>
               Login to access your BeWorking account.
             </Typography>
           </Stack>
@@ -278,14 +216,17 @@ export default function Login() {
                 variant="contained"
                 disabled={loading}
                 sx={{
-                  bgcolor: brandGreen,
+                  bgcolor: theme.palette.brand.green,
                   textTransform: "none",
                   fontWeight: 800,
                   fontSize: "0.95rem",
                   py: 1.3,
                   borderRadius: 1.2,
                   boxShadow: "0 8px 18px rgba(39,179,106,0.25)",
-                  "&:hover": { bgcolor: "#27ae60", boxShadow: "0 10px 20px rgba(39,179,106,0.3)" },
+                  "&:hover": {
+                    bgcolor: theme.palette.brand.greenHover,
+                    boxShadow: "0 10px 20px rgba(39,179,106,0.3)",
+                  },
                 }}
               >
                 {loading ? "Logging in..." : "Login"}
@@ -294,7 +235,12 @@ export default function Login() {
                 variant="text"
                 onClick={() => router.push("/")}
                 disabled={loading}
-                sx={{ textTransform: "none", fontWeight: 600 }}
+                sx={(theme) => ({
+                  textTransform: "none",
+                  fontWeight: 600,
+                  color: theme.palette.brand.green,
+                  "&:hover": { color: theme.palette.brand.greenHover, backgroundColor: "transparent" },
+                })}
               >
                 Need an account? Register
               </Button>
@@ -302,39 +248,6 @@ export default function Login() {
           </Box>
         </Paper>
       </Container>
-
-      <Box
-        sx={{
-          borderTop: "1px solid #e6e9ed",
-          bgcolor: "#fff",
-          py: 4,
-          mt: { xs: 4, md: 2 },
-        }}
-      >
-        <Container maxWidth="lg">
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            alignItems="center"
-            justifyContent="space-between"
-            spacing={2}
-          >
-            <Typography sx={{ color: brandMuted, fontSize: "0.85rem" }}>
-              © 2024 BEWORKING MÁLAGA — ACADEMIC PROJECT
-            </Typography>
-            <Stack direction="row" spacing={3}>
-              <Typography sx={{ color: brandMuted, fontSize: "0.85rem" }}>
-                TERMS & CONDITIONS
-              </Typography>
-              <Typography sx={{ color: brandMuted, fontSize: "0.85rem" }}>
-                PRIVACY POLICY
-              </Typography>
-              <Typography sx={{ color: brandMuted, fontSize: "0.85rem" }}>
-                ACCESSIBILITY
-              </Typography>
-            </Stack>
-          </Stack>
-        </Container>
-      </Box>
-    </Box>
+    </FrontLayout>
   );
 }

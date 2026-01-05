@@ -1,19 +1,20 @@
-"use client";
 
-import { ThemeProvider, CssBaseline } from "@mui/material";
-import { theme } from "../theme";
 import "./globals.css";
+import type { Metadata } from "next";
+import { ClientProviders } from "../components/ClientProviders";
 
-export default function RootLayout({
-  children,
-}: { children: React.ReactNode }) {
+export const metadata: Metadata = {
+  title: "BeWorking",
+  description: "Virtual Office",
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-        {children}
-        </ThemeProvider>
+        <ClientProviders>
+          {children}
+        </ClientProviders>
       </body>
     </html>
   );
