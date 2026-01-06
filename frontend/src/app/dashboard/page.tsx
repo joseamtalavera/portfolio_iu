@@ -3,11 +3,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Box, Button, Paper, Stack, Typography, CircularProgress, Alert, Chip } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { MailItem, Booking, User } from "@/types";
 import { API_URL } from "@/config/constants";
 
 export default function DashboardContent() {
+  const theme = useTheme();
   const router = useRouter();
   const [loaded, setLoaded] = useState(false);
   const [user, setUser] = useState<User | null>(() => {
@@ -198,7 +200,7 @@ export default function DashboardContent() {
                       sx={{
                         mt: 1,
                         fontWeight:600,
-                        bgcolor: stats.status === "active" ? "#2ecc71" : "#6b7280",
+                        bgcolor: stats.status === "active" ? theme.palette.brand.green : theme.palette.brand.muted,
                         color: "#fff",
                       }}
                     />
@@ -229,9 +231,9 @@ export default function DashboardContent() {
               variant="contained" 
               sx={{ 
                 textTransform: "none",
-                bgcolor: "#2ecc71",
+                bgcolor: theme.palette.brand.green,
                 "&:hover": {
-                  bgcolor: "#27ae60",
+                  bgcolor: theme.palette.brand.greenHover,
                 },
               }} 
               onClick={() => router.push("/bookings")}
@@ -244,9 +246,9 @@ export default function DashboardContent() {
               sx={{ 
                 mt: 3, 
                 height: 120, 
-                bgcolor: "#f8fafc", 
+                bgcolor: theme.palette.brand.lightBg, 
                 borderRadius: 2, 
-                border: "1px dashed #e5e7eb",
+                border: `1px dashed ${theme.palette.brand.border}`,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -268,17 +270,17 @@ export default function DashboardContent() {
                 const formattedTime = `${booking.startHour} - ${booking.endHour}`;
 
                 return (
-                  <Paper
-                    key={booking.id}
-                    sx={{
-                      p: 2,
-                      borderRadius: 2,
-                      border: "1px solid #e5e7eb",
-                      "&:hover": {
-                        bgcolor: "#f9fafb",
-                      },
-                    }}
-                  >
+                    <Paper
+                      key={booking.id}
+                      sx={{
+                        p: 2,
+                        borderRadius: 2,
+                        border: `1px solid ${theme.palette.brand.border}`,
+                        "&:hover": {
+                          bgcolor: theme.palette.brand.lightBg,
+                        },
+                      }}
+                    >
                     <Stack direction="row" justifyContent="space-between" alignItems="center">
                       <Box>
                         <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>

@@ -19,11 +19,13 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { User, MailItem } from "@/types";
 import { API_URL } from "@/config/constants";
 
 export default function MailboxPage() {
+  const theme = useTheme();
   const router = useRouter();
   const [ready, setReady] = useState(false); // prevents rendering of unauthenticated content
   const [user, setUser] = useState<User | null>(null); // authenticated user data
@@ -141,12 +143,12 @@ export default function MailboxPage() {
                           size="small"
                           sx={{
                             textTransform: "none",
-                            borderColor: "#2ecc71",
-                            color: "#2ecc71",
+                            borderColor: theme.palette.brand.green,
+                            color: theme.palette.brand.green,
                             "&:hover": {
-                              borderColor: "#27ae60",
-                              color: "#27ae60",
-                              bgcolor: "#e8f6ef",
+                              borderColor: theme.palette.brand.greenHover,
+                              color: theme.palette.brand.greenHover,
+                              bgcolor: theme.palette.brand.accentSoft,
                             },
                           }}
                           onClick={() => {
@@ -198,12 +200,12 @@ export default function MailboxPage() {
               variant="outlined"
               sx={{
                 textTransform: "none",
-                borderColor: "#2ecc71",
-                color: "#2ecc71",
+                borderColor: theme.palette.brand.green,
+                color: theme.palette.brand.green,
                 "&:hover": {
-                  borderColor: "#27ae60",
-                  color: "#27ae60",
-                  bgcolor: "#e8f6ef",
+                  borderColor: theme.palette.brand.greenHover,
+                  color: theme.palette.brand.greenHover,
+                  bgcolor: theme.palette.brand.accentSoft,
                 },
               }}
             >

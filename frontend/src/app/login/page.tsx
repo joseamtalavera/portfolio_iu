@@ -36,7 +36,7 @@ import { useRouter } from "next/navigation";
 import { Alert, Box, Button, Container, Paper, Stack, TextField, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { FrontLayout } from "@/components/FrontLayout";
-import { API_URL } from "@/config/constants";
+import { loginUser, validateLogin } from "@/utils/auth";
 
 export default function Login() {
   const router = useRouter();
@@ -46,12 +46,6 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null); // Error message to display to the user when login fails
   const [loading, setLoading] = useState(false); // Loading state to display a loading spinner while the login is in progress
 
-
-  const validate = () => {
-    if (!email.includes("@")) return "Invalid email address";
-    if (!password.trim()) return "Password is required";
-    return null;
-  }
 
   /**
    * AUTHENTICATION CYCLE - Complete Flow Explanation
@@ -90,7 +84,7 @@ export default function Login() {
     e.preventDefault(); // Prevent the default form submission behavior
     setError(null); // Clear any previous errors
    
-    const validationError = validate(); // Validate the form data
+    const validationError = validateLogin(email, password); // Validate the form data
     if (validationError) {
       setError(validationError);
       return;
@@ -98,38 +92,7 @@ export default function Login() {
 
     setLoading(true);
     try {
-      // STEP 1: Send login request to backend
-      // Backend endpoint: POST /api/auth/login
-      // Backend validates email/password and returns JWT token if valid
-      const response = await fetch(`${API_URL}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        setError(data.message || "Login failed");
-        return;
-      }
-
-      // Parse the JSON response from the API
-      const data = await response.json();
-
-      // Destructure the response to extract token and user data
-      // Type assertion ensures TypeScript knows the shape of the response:
-      // - token: required JWT string for authentication
-      // - user: optional object containing user profile information
-      const { token, user } = data as {
-        token: string;
-        user?: {
-          id: number;
-          name: string;
-          email: string;
-        };
-      }
+      const { token, user } = await loginUser(email, password);
 
       // STEP 2: Store JWT token in localStorage
       // This token will be used for ALL subsequent authenticated API requests
@@ -152,12 +115,12 @@ export default function Login() {
       // The dashboard will use the stored token to make authenticated requests
       // Token is automatically included in all API calls via Authorization header
       router.push("/dashboard");
-    } catch {
-      setError("Network error. Please try again later.");
-  } finally {
-    setLoading(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Login failed");
+    } finally {
+      setLoading(false);
+    }
   }
-}
 
   return (
     <FrontLayout ctaLabel="CLIENT ACCESS" ctaHref="/" hideCta>
@@ -200,7 +163,7 @@ export default function Login() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 fullWidth
-                InputProps={{ sx: { bgcolor: "#f9fafb", borderRadius: 1.2 } }}
+                InputProps={{ sx: { bgcolor: theme.palette.brand.lightBg, borderRadius: 1.2 } }}
               />
               <TextField
                 placeholder="Password"
@@ -209,7 +172,7 @@ export default function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 fullWidth
-                InputProps={{ sx: { bgcolor: "#f9fafb", borderRadius: 1.2 } }}
+                InputProps={{ sx: { bgcolor: theme.palette.brand.lightBg, borderRadius: 1.2 } }}
               />
               <Button
                 type="submit"

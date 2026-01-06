@@ -2,19 +2,20 @@
 
 import React, { useEffect, useState } from "react";
 import {
-    Dialog,
-    DialogTitle,
-    DialogContent, 
-    DialogActions,
-    Button, 
-    TextField,
-    Box,
-    Stack,
-    Typography,
-    CircularProgress,
-    Alert,
-    Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+  Box,
+  Stack,
+  Typography,
+  CircularProgress,
+  Alert,
+  Paper,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import { User } from "@/types";
 import { API_URL } from "@/config/constants";
 
@@ -26,6 +27,7 @@ interface ProfileModalProps {
 }
 
 export default function ProfileModal({ open, onClose, user, onUpdate }: ProfileModalProps) {
+    const theme = useTheme();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
@@ -124,10 +126,10 @@ export default function ProfileModal({ open, onClose, user, onUpdate }: ProfileM
             <DialogTitle 
                 sx={{ 
                     pb: 1,
-                    borderBottom: "1px solid #e5e7eb",
+                    borderBottom: `1px solid ${theme.palette.brand.border}`,
                     fontWeight: 700,
                     fontSize: "1.5rem",
-                    color: "#2ecc71"
+                    color: theme.palette.brand.green,
                 }}
             >
                 Edit Profile
@@ -152,9 +154,9 @@ export default function ProfileModal({ open, onClose, user, onUpdate }: ProfileM
                             elevation={0} 
                             sx={{ 
                                 p: 2.5, 
-                                bgcolor: "#f9fafb",
+                                bgcolor: theme.palette.brand.lightBg,
                                 borderRadius: 2,
-                                border: "1px solid #e5e7eb"
+                                border: `1px solid ${theme.palette.brand.border}`,
                             }}
                         >
                             <Typography 
@@ -162,7 +164,7 @@ export default function ProfileModal({ open, onClose, user, onUpdate }: ProfileM
                                 gutterBottom 
                                 sx={{ 
                                     fontWeight: 600,
-                                    color: "#1f2937",
+                                    color: theme.palette.brand.dark,
                                     mb: 2,
                                     fontSize: "1.1rem"
                                 }}
@@ -192,7 +194,7 @@ export default function ProfileModal({ open, onClose, user, onUpdate }: ProfileM
                                     sx={{
                                         "& .MuiOutlinedInput-root": {
                                             borderRadius: 2,
-                                            bgcolor: "#f9fafb",
+                                            bgcolor: theme.palette.brand.lightBg,
                                         }
                                     }}
                                 />
@@ -228,9 +230,9 @@ export default function ProfileModal({ open, onClose, user, onUpdate }: ProfileM
                             elevation={0} 
                             sx={{ 
                                 p: 2.5, 
-                                bgcolor: "#f9fafb",
+                                bgcolor: theme.palette.brand.lightBg,
                                 borderRadius: 2,
-                                border: "1px solid #e5e7eb"
+                                border: `1px solid ${theme.palette.brand.border}`,
                             }}
                         >
                             <Typography 
@@ -238,7 +240,7 @@ export default function ProfileModal({ open, onClose, user, onUpdate }: ProfileM
                                 gutterBottom 
                                 sx={{ 
                                     fontWeight: 600,
-                                    color: "#1f2937",
+                                    color: theme.palette.brand.dark,
                                     mb: 2,
                                     fontSize: "1.1rem"
                                 }}
@@ -306,7 +308,7 @@ export default function ProfileModal({ open, onClose, user, onUpdate }: ProfileM
                     sx={{ 
                         p: 2.5, 
                         pt: 2,
-                        borderTop: "1px solid #e5e7eb",
+                        borderTop: `1px solid ${theme.palette.brand.border}`,
                         gap: 1.5
                     }}
                 >
@@ -318,9 +320,9 @@ export default function ProfileModal({ open, onClose, user, onUpdate }: ProfileM
                             px: 3,
                             textTransform: "none",
                             fontWeight: 500,
-                            color: "#6b7280",
+                            color: theme.palette.brand.muted,
                             "&:hover": {
-                                bgcolor: "#f3f4f6"
+                                bgcolor: theme.palette.brand.lightBg
                             }
                         }}
                     >
@@ -335,12 +337,12 @@ export default function ProfileModal({ open, onClose, user, onUpdate }: ProfileM
                             px: 3,
                             textTransform: "none",
                             fontWeight: 600,
-                            bgcolor: "#2ecc71",
+                            bgcolor: theme.palette.brand.green,
                             "&:hover": {
-                                bgcolor: "#27ae60"
+                                bgcolor: theme.palette.brand.greenHover
                             },
                             "&:disabled": {
-                                bgcolor: "#a0a0a0"
+                                bgcolor: theme.palette.brand.border
                             }
                         }}
                     >
@@ -367,9 +369,9 @@ export default function ProfileModal({ open, onClose, user, onUpdate }: ProfileM
                     sx={{ 
                         fontWeight: 700,
                         fontSize: "1.25rem",
-                        color: "#2ecc71",
+                        color: theme.palette.brand.green,
                         pb: 1,
-                        borderBottom: "1px solid #e5e7eb"
+                        borderBottom: `1px solid ${theme.palette.brand.border}`
                     }}
                 >
                     Profile Updated Successfully
@@ -379,7 +381,7 @@ export default function ProfileModal({ open, onClose, user, onUpdate }: ProfileM
                         Your profile has been updated successfully!
                     </Typography>
                 </DialogContent>
-                <DialogActions sx={{ p: 2.5, pt: 2, borderTop: "1px solid #e5e7eb" }}>
+                <DialogActions sx={{ p: 2.5, pt: 2, borderTop: `1px solid ${theme.palette.brand.border}` }}>
                     <Button 
                         onClick={() => {
                             setSuccessDialogOpen(false);
@@ -392,9 +394,9 @@ export default function ProfileModal({ open, onClose, user, onUpdate }: ProfileM
                             px: 3,
                             textTransform: "none",
                             fontWeight: 600,
-                            bgcolor: "#2ecc71",
+                            bgcolor: theme.palette.brand.green,
                             "&:hover": {
-                                bgcolor: "#27ae60"
+                                bgcolor: theme.palette.brand.greenHover,
                             }
                         }}
                     >

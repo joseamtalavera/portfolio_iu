@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Box, Button, Paper, Stack, Typography, CircularProgress, Alert} from "@mui/material";
+import { Box, Button, Paper, Stack, Typography, CircularProgress, Alert } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { User } from "@/types";
@@ -10,6 +11,7 @@ import { API_URL } from "@/config/constants";
 
 export default function SubscriptionSuccessPage() {
     const router = useRouter();
+    const theme = useTheme();
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<User | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -91,7 +93,7 @@ export default function SubscriptionSuccessPage() {
                             <Alert severity="error"></Alert>
                         ) : (
                         <>
-                            <CheckCircleIcon sx={{ fontSize: 80, color: "#2ecc71", mx: "auto" }} />
+                            <CheckCircleIcon sx={{ fontSize: 80, color: theme.palette.brand.green, mx: "auto" }} />
                             <Box>
                                 <Typography variant="h4" sx={{ fontWeight: 700, mb: 1}}>
                                     Subscription Activated!
@@ -105,9 +107,9 @@ export default function SubscriptionSuccessPage() {
                                 onClick={handleGoToDashboard}
                                 sx={{
                                     textTransform: "none",
-                                    bgcolor: "#2ecc71",
+                                    bgcolor: theme.palette.brand.green,
                                     "&:hover": {
-                                        bgcolor: "#27ae60",
+                                        bgcolor: theme.palette.brand.greenHover,
                                     },
                                 }}
                             >
@@ -121,4 +123,3 @@ export default function SubscriptionSuccessPage() {
         </DashboardLayout>
     );
 }
-

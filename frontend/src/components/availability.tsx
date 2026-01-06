@@ -13,6 +13,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import { RoomAvailability, TimeSlot } from "@/types";
 
 type AvailabilityProps = {
@@ -21,6 +22,7 @@ type AvailabilityProps = {
 };
 
 export function Availability({ slots, rooms }: AvailabilityProps) {
+  const theme = useTheme();
   const roomColWidth = 160;
   const slotWidth = 70;
   const minTableWidth = roomColWidth + slots.length * slotWidth;
@@ -51,18 +53,18 @@ export function Availability({ slots, rooms }: AvailabilityProps) {
             height: 10,
           },
           "&::-webkit-scrollbar-track": {
-            backgroundColor: "#f1f1f1",
+            backgroundColor: theme.palette.brand.borderSoft,
             borderRadius: 5,
           },
           "&::-webkit-scrollbar-thumb": {
-            backgroundColor: "#888",
+            backgroundColor: theme.palette.brand.muted,
             borderRadius: 5,
             "&:hover": {
-              backgroundColor: "#555",
+              backgroundColor: theme.palette.brand.dark,
             },
           },
           scrollbarWidth: "thin",
-          scrollbarColor: "#888 #f1f1f1",
+          scrollbarColor: `${theme.palette.brand.muted} ${theme.palette.brand.borderSoft}`,
         }}
       >
         <Table
@@ -143,12 +145,12 @@ export function Availability({ slots, rooms }: AvailabilityProps) {
                           width: "100%",
                           borderRadius: 2,
                           border: "1px solid",
-                          borderColor: isBooked ? "#f5b5b5" : "#e0e7ff",
-                          bgcolor: isBooked ? "#fdecec" : "#f8fafc",
+                          borderColor: isBooked ? theme.palette.error.light : theme.palette.brand.border,
+                          bgcolor: isBooked ? theme.palette.error.light : theme.palette.brand.lightBg,
                         }}
                       >
                         {isBooked ? (
-                          <Typography variant="caption" fontWeight={600} color="#c53030" noWrap>
+                          <Typography variant="caption" fontWeight={600} color={theme.palette.error.main} noWrap>
                             Booked
                           </Typography>
                         ) : null}

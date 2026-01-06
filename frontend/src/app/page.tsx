@@ -19,7 +19,7 @@ import MarkEmailReadIcon from "@mui/icons-material/MarkEmailRead";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import { useTheme } from "@mui/material/styles";
 import { FrontLayout } from "@/components/FrontLayout";
-import { API_URL } from "@/config/constants";
+import { registerUser, validateRegister } from "@/utils/auth";
 
 export default function Home() {
   const router = useRouter();
@@ -31,20 +31,12 @@ export default function Home() {
   const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const validate = () => {
-    if (!name.trim()) return "Name is required";
-    if (!email.includes("@")) return "Invalid email address";
-    if (!password.trim()) return "Password is required";
-    if (password.length < 6) return "Password must be at least 6 characters";
-    return null;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
 
-    const validationError = validate();
+    const validationError = validateRegister(name, email, password);
     if (validationError) {
       setError(validationError);
       return;
@@ -52,22 +44,11 @@ export default function Home() {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        setError(data.message || "Registration failed");
-        return;
-      }
-
+      await registerUser(name, email, password);
       setSuccess("Registration successful! Redirecting to login...");
       setTimeout(() => router.push("/login"), 1500);
-    } catch {
-      setError("Network error. Please try again later.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Registration failed");
     } finally {
       setLoading(false);
     }
@@ -175,7 +156,7 @@ export default function Home() {
             >
               <Stack spacing={1.5} mb={2}>
                 <Stack direction="row" alignItems="center" spacing={1.2}>
-                  <AutoAwesomeIcon sx={{ color: "#f5c44f" }} />
+                  <AutoAwesomeIcon sx={{ color: theme.palette.brand.yellow }} />
                   <Typography sx={{ fontWeight: 700, fontSize: "1.1rem", color: theme.palette.brand.dark }}>
                     Activate Your Virtual Office
                   </Typography>
@@ -196,7 +177,6 @@ export default function Home() {
                     onChange={(e) => setName(e.target.value)}
                     fullWidth
                     required
-                    InputProps={{ sx: { bgcolor: "#f9fafb", borderRadius: 1.2 } }}
                   />
                   <TextField
                     placeholder="Email Address"
@@ -205,7 +185,6 @@ export default function Home() {
                     onChange={(e) => setEmail(e.target.value)}
                     fullWidth
                     required
-                    InputProps={{ sx: { bgcolor: "#f9fafb", borderRadius: 1.2 } }}
                   />
                   <TextField
                     placeholder="Password"
@@ -215,7 +194,6 @@ export default function Home() {
                     fullWidth
                     required
                     helperText="At least 6 characters"
-                    InputProps={{ sx: { bgcolor: "#f9fafb", borderRadius: 1.2 } }}
                   />
                   <Button
                     type="submit"

@@ -3,12 +3,14 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Box, Button, Paper, Stack, Typography } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { User } from "@/types";
 
 export default function SubscriptionCancelPage() {
   const router = useRouter();
+  const theme = useTheme();
   const [user, setUser] = useState<User | null>(() => {
     if (typeof window !== "undefined") {
       const storedUser = localStorage.getItem("user");
@@ -53,7 +55,7 @@ export default function SubscriptionCancelPage() {
       <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "60vh" }}>
         <Paper sx={{ p: 4, maxWidth: 500, borderRadius: 3, textAlign: "center" }}>
           <Stack spacing={3}>
-            <CancelIcon sx={{ fontSize: 80, color: "#6b7280", mx: "auto" }} />
+            <CancelIcon sx={{ fontSize: 80, color: theme.palette.brand.muted, mx: "auto" }} />
             <Box>
               <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
                 Subscription Cancelled
@@ -68,11 +70,11 @@ export default function SubscriptionCancelPage() {
                 onClick={handleGoToDashboard}
                 sx={{
                   textTransform: "none",
-                  color: "#6b7280",
-                  borderColor: "#6b7280",
+                  color: theme.palette.brand.muted,
+                  borderColor: theme.palette.brand.muted,
                   "&:hover": {
-                    borderColor: "#6b7280",
-                    bgcolor: "#f9fafb",
+                    borderColor: theme.palette.brand.muted,
+                    bgcolor: theme.palette.brand.lightBg,
                   },
                 }}
               >
@@ -83,9 +85,9 @@ export default function SubscriptionCancelPage() {
                 onClick={handleTryAgain}
                 sx={{
                   textTransform: "none",
-                  bgcolor: "#2ecc71",
+                  bgcolor: theme.palette.brand.green,
                   "&:hover": {
-                    bgcolor: "#27ae60",
+                    bgcolor: theme.palette.brand.greenHover,
                   },
                 }}
               >

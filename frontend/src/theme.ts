@@ -59,7 +59,12 @@ export const theme = createTheme({
     },
     MuiTextField: {
       defaultProps: {
-        InputProps: { sx: { bgcolor: "#f9fafb", borderRadius: 1.2 } },
+        InputProps: {
+          sx: (theme) => ({
+            bgcolor: theme.palette.brand.lightBg,
+            borderRadius: 1.2,
+          }),
+        },
       },
     },
   },

@@ -17,6 +17,7 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import EventNoteOutlinedIcon from "@mui/icons-material/EventNoteOutlined";
@@ -51,6 +52,7 @@ export function DashboardLayout({
   onLogout,
   children,
 }: DashboardLayoutProps) {
+  const theme = useTheme();
   const router = useRouter();
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(user || null);
@@ -140,26 +142,25 @@ export function DashboardLayout({
     }
   };
 
-
-
-
   return (
-    <Box sx={{ minHeight: "100vh", display: "flex", bgcolor: "#f4f7fb" }}>
+    <Box sx={{ minHeight: "100vh", display: "flex", bgcolor: theme.palette.brand.lightBg }}>
       {/* Sidebar */}
       <Box
         sx={{
           width: 230,
           bgcolor: "#fff",
-          borderRight: "1px solid #e5e7eb",
+          borderRight: `1px solid ${theme.palette.brand.border}`,
           display: { xs: "none", md: "flex" },
           flexDirection: "column",
         }}
       >
-        <Stack direction="row" alignItems="center" spacing={1.5} sx={{ p: 2 }}>
-          <Box sx={{ width: 10, height: 10, bgcolor: "#2ecc71", borderRadius: "50%" }} />
-          <Typography variant="h6" sx={{ fontWeight: 700, color: "#2ecc71" }}>
-            beworking
-          </Typography>
+        <Stack direction="row" alignItems="center" spacing={1} sx={{ p: 2 }}>
+          <Box
+            component="img"
+            src="/beworking_logo_h40_3x.png"
+            alt="BeWorking"
+            sx={{ height: 32, width: "auto", display: "block" }}
+          />
         </Stack>
         <Divider />
         <List sx={{ flex: 1 }}>
@@ -172,18 +173,25 @@ export function DashboardLayout({
                   borderRadius: 2,
                   mx: 1,
                   my: 0.5,
-                  "&.Mui-selected": { bgcolor: "#e8f6ef", color: "#2ecc71" },
+                  "&.Mui-selected": {
+                    bgcolor: theme.palette.brand.accentSoft,
+                    color: theme.palette.brand.green,
+                  },
                 }}
               >
-                <ListItemIcon sx={{ color: item.key === active ? "#2ecc71" : "#6b7280" }}>
+                <ListItemIcon
+                  sx={{
+                    color: item.key === active ? theme.palette.brand.green : theme.palette.brand.muted,
+                  }}
+                >
                   {item.icon}
                 </ListItemIcon>
                 <ListItemText 
                   primary={item.label}
                   sx={{ 
-                    color: item.key === active ? "#2ecc71" : "#6b7280",
+                    color: item.key === active ? theme.palette.brand.green : theme.palette.brand.muted,
                     "& .MuiListItemText-primary": {
-                      color: item.key === active ? "#2ecc71" : "#6b7280",
+                      color: item.key === active ? theme.palette.brand.green : theme.palette.brand.muted,
                     }
                   }}
                 />
@@ -203,10 +211,14 @@ export function DashboardLayout({
           overflow: "hidden", // Prevent horizontal overflow
         }}
       >
-        <AppBar position="static" elevation={0} sx={{ bgcolor: "#fff", color: "inherit", borderBottom: "1px solid #e5e7eb" }}>
+        <AppBar
+          position="static"
+          elevation={0}
+          sx={{ bgcolor: "#fff", color: "inherit", borderBottom: `1px solid ${theme.palette.brand.border}` }}
+        >
           <Toolbar sx={{ justifyContent: "flex-end" }}>
             <Avatar 
-              sx={{ bgcolor: "#2ecc71", cursor: "pointer" }}
+              sx={{ bgcolor: theme.palette.brand.green, cursor: "pointer" }}
               onClick={handleAvatarClick}
             >
               {(user?.name ?? "U").charAt(0).toUpperCase()}

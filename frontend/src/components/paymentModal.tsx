@@ -14,6 +14,7 @@ import {
     Alert,
     Divider
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import { API_URL } from "@/config/constants";
 
 interface PaymentModalProps {
@@ -25,6 +26,7 @@ interface PaymentModalProps {
 // Inizialise Stripe ( i still need to add the public key to the .env file)
 
 export default function PaymentModal({ open, onClose, onSuccess}: PaymentModalProps) {
+    const theme = useTheme();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -85,7 +87,7 @@ export default function PaymentModal({ open, onClose, onSuccess}: PaymentModalPr
 
         <DialogTitle
             sx={{ 
-                bgcolor: "#2ecc71",
+                bgcolor: theme.palette.brand.green,
                 color: "white",
                 fontWeight: 600, 
                 py: 2,
@@ -103,7 +105,7 @@ export default function PaymentModal({ open, onClose, onSuccess}: PaymentModalPr
                 )}
 
                 <Box>
-                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: "#1a1a1a"}}>
+                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: theme.palette.brand.dark}}>
                         Unlock Full Access
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{mb: 2}}>
@@ -115,10 +117,10 @@ export default function PaymentModal({ open, onClose, onSuccess}: PaymentModalPr
 
                 <Box
                     sx={{
-                        bgcolor: "#f8f9fa",
+                        bgcolor: theme.palette.brand.lightBg,
                         p: 2,
                         borderRadius: 2,
-                        border: "1px solid #e5e7eb",
+                        border: `1px solid ${theme.palette.brand.border}`,
                     }}
                 >
                     <Stack spacing={1}>
@@ -126,7 +128,7 @@ export default function PaymentModal({ open, onClose, onSuccess}: PaymentModalPr
                             <Typography variant="body1" sx={{fontWeight: 500}}>
                                 Monthly Subscription
                             </Typography>
-                            <Typography variant="h6" sx={{ fontWeight: 700, color: "#2ecc71" }}>
+                            <Typography variant="h6" sx={{ fontWeight: 700, color: theme.palette.brand.green }}>
                                 15 EUR + VAT
                             </Typography>
                         </Box>
@@ -164,7 +166,7 @@ export default function PaymentModal({ open, onClose, onSuccess}: PaymentModalPr
                 disabled={loading}
                 sx={{
                     textTransform: "none",
-                    color: "#6b7280",
+                    color: theme.palette.brand.muted,
                 }}
             >
                 Cancel
@@ -175,10 +177,8 @@ export default function PaymentModal({ open, onClose, onSuccess}: PaymentModalPr
                 variant="contained"
                 sx={{
                     textTransform: "none",
-                    bgcolor: "#2ecc71",
-                    "&:hover": {
-                        bgcolor: "#27ae60",
-                    },
+                    bgcolor: theme.palette.brand.green,
+                    "&:hover": { bgcolor: theme.palette.brand.greenHover },
                 minWidth: 120,
                 }}
             >
@@ -194,4 +194,3 @@ export default function PaymentModal({ open, onClose, onSuccess}: PaymentModalPr
         </Dialog>
     );
 }
-

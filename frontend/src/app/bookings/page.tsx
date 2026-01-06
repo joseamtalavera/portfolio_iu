@@ -24,6 +24,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { Availability } from "@/components/availability";
 import { API_URL } from "@/config/constants";
@@ -37,6 +38,7 @@ function TabPanel({ value, index, children }: { value: number; index: number; ch
 
 export default function BookingsPage() {
   const router = useRouter();
+  const theme = useTheme();
   const [ready, setReady] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -419,13 +421,13 @@ export default function BookingsPage() {
             scrollButtons="auto"
             sx={{
               "& .MuiTab-root": {
-                color: "#6b7280",
+                color: theme.palette.brand.muted,
                 "&.Mui-selected": {
-                  color: "#2ecc71",
+                  color: theme.palette.brand.green,
                 },
               },
               "& .MuiTabs-indicator": {
-                backgroundColor: "#2ecc71",
+                backgroundColor: theme.palette.brand.green,
               },
             }}
           >
@@ -523,12 +525,12 @@ export default function BookingsPage() {
                   sx={{ 
                     mt: 2,
                     textTransform: "none",
-                    bgcolor: "#2ecc71",
+                    bgcolor: theme.palette.brand.green,
                     "&:hover": {
-                      bgcolor: "#27ae60",
+                      bgcolor: theme.palette.brand.greenHover,
                     },
                     "&:disabled": {
-                      bgcolor: "#a0a0a0",
+                      bgcolor: theme.palette.brand.border,
                     },
                   }} 
                   type="submit" 
@@ -618,9 +620,9 @@ export default function BookingsPage() {
             variant="contained"
             sx={{
               textTransform: "none",
-              bgcolor: "#2ecc71",
+              bgcolor: theme.palette.brand.green,
               "&:hover": {
-                bgcolor: "#27ae60",
+                bgcolor: theme.palette.brand.greenHover,
               },
             }}
           >
@@ -643,9 +645,9 @@ export default function BookingsPage() {
             variant="contained"
             sx={{
               textTransform: "none",
-              bgcolor: "#2ecc71",
+              bgcolor: theme.palette.brand.green,
               "&:hover": {
-                bgcolor: "#27ae60",
+                bgcolor: theme.palette.brand.greenHover,
               },
             }}
           >
@@ -701,9 +703,9 @@ export default function BookingsPage() {
             variant="contained"
             sx={{
               textTransform: "none",
-              bgcolor: "#2ecc71",
+              bgcolor: theme.palette.brand.green,
               "&:hover": {
-                bgcolor: "#27ae60",
+                bgcolor: theme.palette.brand.greenHover,
               },
             }}
           >
