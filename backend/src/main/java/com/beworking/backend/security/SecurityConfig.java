@@ -22,18 +22,34 @@ import java.util.List;
 
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
-@Configuration // Indicates that the class contains Spring configuration and bean definitions.
+/**
+ * Spring Security configuration for JWT authentication and CORS.
+ */
+@Configuration
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserRepository userRepository;
 
+    /**
+     * Creates the configuration with required dependencies.
+     *
+     * @param jwtAuthenticationFilter JWT auth filter
+     * @param userRepository user repository
+     */
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, UserRepository userRepository) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.userRepository = userRepository;
     }
 
-    @Bean // Defines a bean for the security filter chain, configuring HTTP security settings.
+    /**
+     * Configures the HTTP security filter chain.
+     *
+     * @param http HTTP security builder
+     * @return configured security filter chain
+     * @throws Exception when configuration fails
+     */
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
@@ -51,6 +67,11 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Provides a UserDetailsService backed by the user repository.
+     *
+     * @return user details service
+     */
     @Bean
     public UserDetailsService userDetailsService() {
         // returns a lambda expression that loads user details by username (email) for authentication purposes.
@@ -59,10 +80,15 @@ public class SecurityConfig {
                         .withUsername(user.getEmail()) // sets the username for authentication.
                         .password(user.getPassword()) // sets the password for authentication.
                         .authorities("USER") // assigns the "USER" authority to the user.
-                        .build()) // builds the UserDetails object.
+                .build()) // builds the UserDetails object.
                 .orElseThrow(() -> new ResponseStatusException(UNAUTHORIZED, "User not found"));
     }
 
+    /**
+     * Authentication provider using DAO and password encoder.
+     *
+     * @return configured authentication provider
+     */
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         // creates and configures a DaoAuthenticationProvider for authentication.
@@ -72,11 +98,21 @@ public class SecurityConfig {
         return authProvider;
     }
 
+    /**
+     * Password encoder for hashing user passwords.
+     *
+     * @return password encoder
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * CORS configuration for frontend origins.
+     *
+     * @return CORS configuration source
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
@@ -90,6 +126,13 @@ public class SecurityConfig {
         return source;
     }
 
+    /**
+     * Authentication manager bean from Spring configuration.
+     *
+     * @param configuration authentication configuration
+     * @return authentication manager
+     * @throws Exception on configuration errors
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();

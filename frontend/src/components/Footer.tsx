@@ -1,8 +1,16 @@
 "use client";
 
+/**
+ * Public footer with project attribution.
+ */
 import { Box, Container, Stack, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
+/**
+ * Renders the site footer.
+ *
+ * @returns footer element
+ */
 export function Footer() {
   const theme = useTheme();
   return (

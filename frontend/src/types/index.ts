@@ -1,3 +1,9 @@
+/**
+ * User profile data returned by the backend.
+ */
+/**
+ * Shared frontend TypeScript types.
+ */
 export type User = {
   id?: number;
   name?: string;
@@ -11,6 +17,9 @@ export type User = {
   subscriptionStatus?: string;
 };
 
+/**
+ * Mailbox item payload from the API.
+ */
 export type MailItem = {
   id: number;
   subject: string;
@@ -19,6 +28,9 @@ export type MailItem = {
   pdfUrl?: string;
 };
 
+/**
+ * Booking payload from the API.
+ */
 export type Booking = {
   id: number;
   product: string;
@@ -29,11 +41,17 @@ export type Booking = {
 };
 
 
+/**
+ * Time slot label/value pair.
+ */
 export type TimeSlot = {
   label : string;
   value : string;
 };
 
+/**
+ * Booked time slots for a room.
+ */
 export type RoomAvailability = {
   room: string;
   booked : string[];

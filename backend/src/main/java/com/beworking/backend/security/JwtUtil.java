@@ -13,25 +13,40 @@ import java.util.Date;
 import java.util.Map;
 import java.util.function.Function; // Functional interface representing a function that takes an input and produces an output, used for extracting claims from JWTs.
 
-
 /* A Jwt consists of three parts:
     1. Header: Contains metadata about the token, such as the type of token and the signing algorithm used.
     2. Payload: Contains the claims, which are statements about an entity (typically, the user) and additional data.
     3. Signature: Used to verify the authenticity of the token and ensure it hasn't been tampered with.
  */
 
+/**
+ * Utility for generating and validating JWT tokens.
+ */
 @Component
 public class JwtUtil {
 
     private final Key signingKey;
     private final long expirationMs;
 
+    /**
+     * Creates the utility using the configured signing key and expiration.
+     *
+     * @param secret Base64-encoded JWT secret
+     * @param expirationMs token expiration in milliseconds
+     */
     public JwtUtil(@Value("${jwt.secret}") String secret,
                    @Value("${jwt.expiration-ms}") long expirationMs) {
         this.signingKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret)); // (1) Base64 is decoding into byte array. (2)Then, Keys.hmacShaKeyFor creates a "signing key" using the decoded byte array and HMAC SHA algorithm. (3) This key is stored in the signingKey variable for signing and verifying JWTs.
         this.expirationMs = expirationMs;
     }
 
+    /**
+     * Generates a JWT token for a user.
+     *
+     * @param email user email
+     * @param userId user ID
+     * @return JWT token
+     */
     public String generateToken(String email, Long userId) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expirationMs);
@@ -44,10 +59,23 @@ public class JwtUtil {
                 .compact(); // This method finalizes the JWT creation process by compacting all the components (header, payload, and signature) into a single string representation of the JWT.
     }
 
+    /**
+     * Extracts the username (subject) from a token.
+     *
+     * @param token JWT token
+     * @return username
+     */
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
+    /**
+     * Validates a token for a given username.
+     *
+     * @param token JWT token
+     * @param username expected username
+     * @return true if token is valid and not expired
+     */
     public boolean isTokenValid(String token, String username) {
         return extractUsername(token).equals(username) && !isTokenExpired(token);
     }

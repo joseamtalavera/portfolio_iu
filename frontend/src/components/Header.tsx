@@ -1,16 +1,30 @@
 "use client";
 
+/**
+ * Public header bar with logo and optional call-to-action button.
+ */
 import Link from "next/link";
 import Image from "next/image";
 import { AppBar, Toolbar, Container, Box, Button } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
+/**
+ * Header configuration for optional CTA rendering.
+ */
 type HeaderProps = {
   ctaLabel?: string;
   ctaHref?: string;
   hideCta?: boolean;
 };
 
+/**
+ * Renders the public site header.
+ *
+ * @param ctaLabel button label (optional)
+ * @param ctaHref link target for the CTA (optional)
+ * @param hideCta hides the CTA button when true
+ * @returns header element
+ */
 export function Header({ ctaLabel, ctaHref, hideCta = false }: HeaderProps) {
   const theme = useTheme();
 
@@ -30,12 +44,11 @@ export function Header({ ctaLabel, ctaHref, hideCta = false }: HeaderProps) {
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Link href="/" style={{ display: "inline-flex", alignItems: "center" }}>
               <Image
-                src="/beworking_logo_h40_3x.png"
+                src="/beworking_logo_clean.svg"
                 alt="BeWorking logo"
                 width={150}
                 height={40}
                 priority
-                style={{ width: 150, height: "auto" }}
               />
             </Link>
           </Box>

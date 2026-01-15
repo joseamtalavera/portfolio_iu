@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+/**
+ * Subscription endpoints for Stripe checkout and webhooks.
+ */
 @RestController
 @RequestMapping("/api/subscription")
 public class SubscriptionController {
@@ -15,14 +18,21 @@ public class SubscriptionController {
     private final SubscriptionService subscriptionService;
     private final UserService userService;
 
+    /**
+     * Creates the controller with required services.
+     *
+     * @param subscriptionService subscription service
+     * @param userService user service
+     */
     public SubscriptionController(SubscriptionService subscriptionService, UserService userService) {
         this.subscriptionService = subscriptionService;
         this.userService = userService;
     }
 
     /**
-     * Creates a Stripe checkout session for the authenticated user
-     * @return The URL to the Stripe checkout page
+     * Creates a Stripe checkout session for the authenticated user.
+     *
+     * @return JSON payload containing the Stripe checkout URL
      */
     @PostMapping("/create-checkout")
     public ResponseEntity<Map<String, String>> createCheckoutSession() {
@@ -32,10 +42,11 @@ public class SubscriptionController {
     }
 
     /**
-     * Webhook endpoint for Stripe webhooks. Sending events from Stripe to our server
-     * This endpoint is public and can be accessed by anyone. (not authenticated)
-     * @param payload request body containing the payload 
-     * @param stripeSignature header containing the Stripe signature
+     * Handles Stripe webhook events (public endpoint).
+     *
+     * @param payload request body containing the webhook payload
+     * @param stripeSignature Stripe signature header
+     * @return success response when processed
      */
     @PostMapping("/webhook")
     public ResponseEntity<String> handleWebhook(

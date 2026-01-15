@@ -6,6 +6,9 @@ import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+/**
+ * JPA entity representing a booking for a user.
+ */
 @Entity
 @Table(name = "bookings")
 @Getter

@@ -12,17 +12,29 @@ import org.springframework.web.server.ResponseStatusException;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
-// Service class to handle user-related operations
-
-@Service // Indicates that this class is a service component in Spring
+/**
+ * User service for accessing and updating the current user's profile.
+ */
+@Service
 public class UserService {
 
     private final UserRepository userRepository;
 
+    /**
+     * Creates the service with required repository.
+     *
+     * @param userRepository user repository
+     */
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Returns the current authenticated user's profile.
+     *
+     * @return current user profile
+     * @throws ResponseStatusException when the user cannot be found
+     */
     public UserResponse getCurrentUserProfile() {
         User user = getCurrentUser();
         return new UserResponse(
@@ -38,6 +50,14 @@ public class UserService {
             user.getSubscriptionStatus()
         );
     }
+
+    /**
+     * Updates a user's profile fields.
+     *
+     * @param user current user entity
+     * @param request profile update payload
+     * @return updated user profile
+     */
     public UserResponse updateProfile(User user, ProfileUpdateRequest request) {
         // This will update the user profile
         user.setName(request.name());
@@ -67,10 +87,12 @@ public class UserService {
     }
 
 
-    // Method to retrieve the currently authenticated user
-    // It fetches the user details from the security context and retrieves the user from the repository
-    // If the user is not found, it throws a 404 Not Found exception
-
+    /**
+     * Retrieves the currently authenticated user entity.
+     *
+     * @return current user entity
+     * @throws ResponseStatusException when the user cannot be resolved
+     */
     public User getCurrentUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal(); //
         String email;

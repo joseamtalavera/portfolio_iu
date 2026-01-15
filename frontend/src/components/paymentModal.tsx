@@ -1,5 +1,8 @@
 "use client";
 
+/**
+ * Subscription payment modal for initiating Stripe checkout.
+ */
 import React, { useState, useEffect } from "react";
 import { 
     Dialog, 
@@ -17,14 +20,23 @@ import {
 import { useTheme } from "@mui/material/styles";
 import { API_URL } from "@/config/constants";
 
+/**
+ * Props for the subscription payment modal.
+ */
 interface PaymentModalProps {
     open: boolean;
     onClose: () => void;
     onSuccess: () => void;
 }
 
-// Inizialise Stripe ( i still need to add the public key to the .env file)
-
+/**
+ * Renders a modal that starts a subscription checkout session.
+ *
+ * @param open whether the modal is open
+ * @param onClose callback to close the modal
+ * @param onSuccess callback after successful payment
+ * @returns modal element
+ */
 export default function PaymentModal({ open, onClose, onSuccess}: PaymentModalProps) {
     const theme = useTheme();
     const [loading, setLoading] = useState(false);

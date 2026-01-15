@@ -6,6 +6,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface MailboxItemRepository extends JpaRepository<MailboxItem, Long> { // Long is the type of the primary key
+/**
+ * Repository for mailbox item persistence and lookup operations.
+ */
+public interface MailboxItemRepository extends JpaRepository<MailboxItem, Long> {
+    /**
+     * Lists all mailbox items for a given user.
+     *
+     * @param user owning user
+     * @return list of mailbox items
+     */
     List<MailboxItem> findAllByUser(User user);
 }

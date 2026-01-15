@@ -1,5 +1,8 @@
 "use client";
 
+/**
+ * Dashboard layout with sidebar navigation, top bar, and profile/payment modals.
+ */
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -39,6 +42,9 @@ const navItems: { key: NavKey; label: string; icon: React.ReactNode; href?: stri
   { key: "__logout__", label: "Log out", icon: <LogoutOutlinedIcon /> },
 ];
 
+/**
+ * Props for the dashboard layout component.
+ */
 interface DashboardLayoutProps {
   active: NavKey; // active navigation item. Only one of the navItems keys can be active at a time.
   user?: User | null; // authenticated user data
@@ -46,6 +52,15 @@ interface DashboardLayoutProps {
   children: React.ReactNode; // child components to be rendered in the main content area
 }
 
+/**
+ * Renders the authenticated dashboard shell and handles profile/payment modals.
+ *
+ * @param active active navigation key
+ * @param user current user (optional)
+ * @param onLogout logout handler
+ * @param children page content
+ * @returns dashboard layout element
+ */
 export function DashboardLayout({
   active,
   user,
@@ -157,7 +172,7 @@ export function DashboardLayout({
         <Stack direction="row" alignItems="center" spacing={1} sx={{ p: 2 }}>
           <Box
             component="img"
-            src="/beworking_logo_h40_3x.png"
+            src="/beworking_logo_clean.svg"
             alt="BeWorking"
             sx={{ height: 32, width: "auto", display: "block" }}
           />

@@ -1,10 +1,22 @@
 "use client";
 
+/**
+ * Layout wrapper for public (non-dashboard) pages.
+ */
 import { Box } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 
+/**
+ * Wraps public pages with header, footer, and background styling.
+ *
+ * @param children page content
+ * @param ctaLabel CTA label shown in the header
+ * @param ctaHref CTA link target
+ * @param hideCta hides the header CTA when true
+ * @returns layout wrapper
+ */
 export function FrontLayout({
   children,
   ctaLabel,

@@ -1,5 +1,8 @@
 "use client";
 
+/**
+ * Public landing and registration page.
+ */
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -21,6 +24,11 @@ import { useTheme } from "@mui/material/styles";
 import { FrontLayout } from "@/components/FrontLayout";
 import { registerUser, validateRegister } from "@/utils/auth";
 
+/**
+ * Renders the landing page with the registration form.
+ *
+ * @returns page component
+ */
 export default function Home() {
   const router = useRouter();
   const theme = useTheme();
@@ -79,7 +87,10 @@ export default function Home() {
                     letterSpacing: "-0.02em",
                   }}
                 >
-                  Your Virtual Office in Tallinn
+                  Your Virtual Office in{" "}
+                  <Box component="span" sx={{ fontWeight: 700 }}>
+                    Tallinn
+                  </Box>
                 </Typography>
               </Box>
 

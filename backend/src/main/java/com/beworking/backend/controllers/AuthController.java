@@ -12,22 +12,42 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Authentication endpoints for registration and login.
+ */
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
     private final AuthService authService;
 
+    /**
+     * Creates the controller with required auth service.
+     *
+     * @param authService authentication service
+     */
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
 
+    /**
+     * Registers a new user.
+     *
+     * @param request registration payload
+     * @return registration response
+     */
     @PostMapping("/register")
     public ResponseEntity<AuthRegisterResponse> register(@Valid @RequestBody AuthRegisterRequest request) {
         AuthRegisterResponse response = authService.register(request);
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Logs a user in and returns a JWT token.
+     *
+     * @param request login payload
+     * @return login response
+     */
     @PostMapping("/login")
     public ResponseEntity<AuthLoginResponse> login(@Valid @RequestBody AuthLoginRequest request) {
         AuthLoginResponse response = authService.login(request);

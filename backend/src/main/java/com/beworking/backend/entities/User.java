@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
+/**
+ * JPA entity representing an application user and related subscription profile fields.
+ */
 @Entity
 @Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 @Getter 
@@ -13,7 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // database's auto increment feature to generate primary keys
     private Long id;
 
     @Column(nullable = false)
@@ -26,45 +29,26 @@ public class User {
     private String password;
 
     // Subscription fields
-    @Column(nullable = false, columnDefinition = "varchar(255) default 'INACTIVE'")
     @Builder.Default
-    private String subscriptionStatus = "INACTIVE"; // INACTIVE, ACTIVE, CANCELLED, EXPIRED, These are the only valid values for the subscription status.
+    private String subscriptionStatus = "INACTIVE";
 
-    @Column(nullable = true)
     private String stripeCustomerId;
 
-    @Column(nullable = true)
     private String stripeSubscriptionId;
 
-    @Column(nullable = true)
     private LocalDateTime subscriptionStartDate;
 
-    @Column(nullable = true)
     private LocalDateTime subscriptionEndDate;
 
-
     // Fields for Stripe integration
-    @Column(nullable = true)
     private String phone;
     
-    @Column(nullable = true)
     private String company;
 
-    @Column(nullable = true)
     private String billingAddress;
-    @Column(nullable = true) 
     private String billingCity;
 
-    @Column(nullable = true)
     private String billingCountry;
 
-    @Column(nullable = true)    
     private String billingPostalCode;
-
-    @PrePersist
-    void ensureSubscriptionStatus() {
-        if (subscriptionStatus == null) {
-            subscriptionStatus = "INACTIVE";
-        }
-    }
 }

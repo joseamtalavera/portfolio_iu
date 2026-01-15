@@ -11,22 +11,40 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * User profile endpoints for the authenticated user.
+ */
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
     
     private final UserService userService;
 
+    /**
+     * Creates the controller with required user service.
+     *
+     * @param userService user service
+     */
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
+    /**
+     * Returns the current authenticated user profile.
+     *
+     * @return current user profile
+     */
     @GetMapping("/me")
     public UserResponse me() {
         return userService.getCurrentUserProfile();
     }
 
-    // this will update the user profile
+    /**
+     * Updates the current user profile.
+     *
+     * @param request profile update payload
+     * @return updated user profile
+     */
     @PutMapping("/profile")
     public UserResponse updateProfile(@Valid @RequestBody ProfileUpdateRequest request) {
         

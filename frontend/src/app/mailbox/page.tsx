@@ -1,5 +1,8 @@
 "use client";
 
+/**
+ * Mailbox page showing messages and PDF attachments.
+ */
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -24,6 +27,11 @@ import { DashboardLayout } from "@/components/dashboard-layout";
 import { User, MailItem } from "@/types";
 import { API_URL } from "@/config/constants";
 
+/**
+ * Renders the mailbox view for the authenticated user.
+ *
+ * @returns page component
+ */
 export default function MailboxPage() {
   const theme = useTheme();
   const router = useRouter();

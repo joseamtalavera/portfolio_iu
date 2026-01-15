@@ -3,14 +3,16 @@ package com.beworking.backend.entities;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.*; // generate code via annotations
 
-
+/**
+ * JPA entity representing a mailbox item belonging to a user.
+ */
 @Entity
 @Table(name = "mailbox_items")
 @Getter
 @Setter
-@NoArgsConstructor //reates a no-argument constructor (needed by JPA).
+@NoArgsConstructor //genreates a no-argument constructor (needed by JPA).
 @AllArgsConstructor // Creates a constructor with 1 parameter for each field in your class.
 @Builder
 public class MailboxItem {
@@ -18,7 +20,7 @@ public class MailboxItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false) // Many mailbox items can belong to one user
+    @ManyToOne(fetch = FetchType.LAZY, optional = false) // Many mailbox items can belong to one user. FetchType.LAZY(entity not loaded until call)
     @JoinColumn(name = "user_id", nullable = false) // Foreign key stored in this column
     private User user;
 
@@ -31,6 +33,5 @@ public class MailboxItem {
     @Column(nullable = false)
     private LocalDateTime timestamp;
 
-    @Column(nullable = true)
     private String pdfUrl;
 }

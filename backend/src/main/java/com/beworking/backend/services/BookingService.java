@@ -12,15 +12,30 @@ import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
+/**
+ * Booking service for creating, listing, and deleting bookings.
+ */
 @Service
 public class BookingService {
 
     private final BookingRepository bookingRepository;
 
+    /**
+     * Creates the service with required repository.
+     *
+     * @param bookingRepository booking repository
+     */
     public BookingService(BookingRepository bookingRepository) {
         this.bookingRepository = bookingRepository;
     }
 
+    /**
+     * Creates a new booking for a user.
+     *
+     * @param user current user
+     * @param request booking request payload
+     * @return created booking response
+     */
     public BookingCreatedResponse createBooking(User user, BookingRequest request) {
         Booking booking = Booking.builder()
                 .user(user)
@@ -34,6 +49,13 @@ public class BookingService {
         return new BookingCreatedResponse(saved.getId(), "Booking created successfully");
     }
 
+    /**
+     * Deletes a booking if it belongs to the given user.
+     *
+     * @param user current user
+     * @param bookingId booking ID to delete
+     * @throws ResponseStatusException when booking is not found or not owned by user
+     */
     public void deleteBooking(User user, Long bookingId) {
         // Find booking by ID and user ID using standard Spring Data JPA method
         Booking booking = bookingRepository.findByIdAndUser_Id(bookingId, user.getId())
@@ -42,6 +64,12 @@ public class BookingService {
         bookingRepository.delete(booking);
     }
 
+    /**
+     * Lists all bookings for a user.
+     *
+     * @param user current user
+     * @return list of bookings
+     */
     public List<BookingResponse> listBookings(User user) {
         return bookingRepository.findAllByUser(user).stream()
                 .map(b -> new BookingResponse(

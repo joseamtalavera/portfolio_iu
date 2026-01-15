@@ -1,5 +1,8 @@
 "use client";
 
+/**
+ * Subscription cancel page shown after Stripe checkout cancellation.
+ */
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Box, Button, Paper, Stack, Typography } from "@mui/material";
@@ -8,6 +11,11 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { User } from "@/types";
 
+/**
+ * Renders the subscription cancellation page.
+ *
+ * @returns page component
+ */
 export default function SubscriptionCancelPage() {
   const router = useRouter();
   const theme = useTheme();

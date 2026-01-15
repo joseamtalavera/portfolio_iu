@@ -1,5 +1,8 @@
 "use client";
 
+/**
+ * Profile editing modal for authenticated users.
+ */
 import React, { useEffect, useState } from "react";
 import {
   Dialog,
@@ -19,6 +22,9 @@ import { useTheme } from "@mui/material/styles";
 import { User } from "@/types";
 import { API_URL } from "@/config/constants";
 
+/**
+ * Props for the profile modal component.
+ */
 interface ProfileModalProps {
     open: boolean;
     onClose: () => void;
@@ -26,6 +32,15 @@ interface ProfileModalProps {
     onUpdate: (updatedUser: User) => void;
 }
 
+/**
+ * Renders a modal that allows users to update their profile fields.
+ *
+ * @param open whether the modal is open
+ * @param onClose callback to close the modal
+ * @param user current user data (optional)
+ * @param onUpdate callback after successful update
+ * @returns modal element
+ */
 export default function ProfileModal({ open, onClose, user, onUpdate }: ProfileModalProps) {
     const theme = useTheme();
     const [loading, setLoading] = useState(false);

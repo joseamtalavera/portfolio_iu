@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-
-
-
+/**
+ * Mailbox endpoints for the authenticated user.
+ */
 @RestController
 @RequestMapping("/api/mailbox")
 public class MailboxController {
@@ -19,14 +19,23 @@ public class MailboxController {
     private final MailboxService mailboxService;
     private final UserService userService;
 
-    
+    /**
+     * Creates the controller with required services.
+     *
+     * @param mailboxService mailbox service
+     * @param userService user service
+     */
     public MailboxController(MailboxService mailboxService, UserService userService) {
         this.mailboxService = mailboxService;
         this.userService = userService;
     }
 
-    // 
-    @GetMapping // Endpoint to retrieve mailbox items for the authenticated user.
+    /**
+     * Retrieves mailbox items for the current authenticated user.
+     *
+     * @return list of mailbox items
+     */
+    @GetMapping
     public List<MailboxItemResponse> getCurrentUser() {
         User user = userService.getCurrentUser();
         return mailboxService.getMailbox(user);

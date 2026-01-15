@@ -1,5 +1,8 @@
 "use client";
 
+/**
+ * Subscription success page shown after Stripe checkout.
+ */
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Box, Button, Paper, Stack, Typography, CircularProgress, Alert } from "@mui/material";
@@ -9,6 +12,11 @@ import { DashboardLayout } from "@/components/dashboard-layout";
 import { User } from "@/types";
 import { API_URL } from "@/config/constants";
 
+/**
+ * Renders the subscription success confirmation page.
+ *
+ * @returns page component
+ */
 export default function SubscriptionSuccessPage() {
     const router = useRouter();
     const theme = useTheme();

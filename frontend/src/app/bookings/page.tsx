@@ -1,5 +1,8 @@
 "use client";
 
+/**
+ * Bookings page with calendar view and booking management.
+ */
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -32,10 +35,23 @@ import { Booking, RoomAvailability, TimeSlot, User } from "@/types";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { parseTimeToMinutes } from "@/utils/timeUtils";
 
+/**
+ * Tab panel helper for bookings page tabs.
+ *
+ * @param value active tab index
+ * @param index panel index
+ * @param children tab content
+ * @returns tab panel element
+ */
 function TabPanel({ value, index, children }: { value: number; index: number; children: React.ReactNode }) {
   return value === index ? <Box sx={{ pt: 2 }}>{children}</Box> : null;
 }
 
+/**
+ * Renders the bookings page for the authenticated user.
+ *
+ * @returns page component
+ */
 export default function BookingsPage() {
   const router = useRouter();
   const theme = useTheme();

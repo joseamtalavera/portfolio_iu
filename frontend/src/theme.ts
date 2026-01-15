@@ -1,4 +1,6 @@
-
+/**
+ * MUI theme configuration and palette extensions.
+ */
 import { createTheme } from "@mui/material/styles";
 
 declare module "@mui/material/styles" {
@@ -20,6 +22,9 @@ declare module "@mui/material/styles" {
   }
 }
 
+/**
+ * Shared theme tokens for the frontend.
+ */
 export const theme = createTheme({
   palette: {
     mode: "light",

@@ -38,6 +38,11 @@ import { useTheme } from "@mui/material/styles";
 import { FrontLayout } from "@/components/FrontLayout";
 import { loginUser, validateLogin } from "@/utils/auth";
 
+/**
+ * Renders the login page and handles authentication flow.
+ *
+ * @returns page component
+ */
 export default function Login() {
   const router = useRouter();
   const theme = useTheme();

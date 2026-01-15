@@ -1,5 +1,8 @@
 "use client";
 
+/**
+ * Availability grid for room booking slots.
+ */
 import React from "react";
 import {
   Box,
@@ -16,11 +19,21 @@ import {
 import { useTheme } from "@mui/material/styles";
 import { RoomAvailability, TimeSlot } from "@/types";
 
+/**
+ * Props for the availability table.
+ */
 type AvailabilityProps = {
   slots: TimeSlot[];
   rooms: RoomAvailability[];
 };
 
+/**
+ * Renders a table showing booked and available time slots per room.
+ *
+ * @param slots list of time slot labels
+ * @param rooms room availability data
+ * @returns availability grid element
+ */
 export function Availability({ slots, rooms }: AvailabilityProps) {
   const theme = useTheme();
   const roomColWidth = 160;

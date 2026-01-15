@@ -22,6 +22,9 @@ import java.util.Optional;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
+/**
+ * Subscription service for Stripe checkout and webhook processing.
+ */
 @Service
 public class SubscriptionService {
 
@@ -42,15 +45,22 @@ public class SubscriptionService {
     @Value("${stripe.cancel-url:http://localhost:3000/subscription/cancel}")
     private String cancelUrl;
 
+    /**
+     * Creates the service with required repository.
+     *
+     * @param userRepository user repository
+     */
     public SubscriptionService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
 
     /**
-     * Creates a stripe checkout session for the user
-     * @param user The user requesting the subscription
-     * @return The URL to the stripe checkout page
+     * Creates a Stripe checkout session for the user.
+     *
+     * @param user the user requesting the subscription
+     * @return checkout URL to redirect the user
+     * @throws ResponseStatusException when Stripe config is missing or Stripe API fails
      */
 
     public String createCheckoutSession(User user) {
@@ -107,9 +117,11 @@ public class SubscriptionService {
     }
 
     /**
-     * Handles Stripe webhook events
-     * @param payload The webhook payload
-     * @param signature The Stripe signature header
+     * Handles Stripe webhook events.
+     *
+     * @param payload webhook payload
+     * @param signature Stripe signature header
+     * @throws ResponseStatusException when signature is invalid or processing fails
      */
     public void handleWebhook(String payload, String signature) {
         if (webhookSecret == null || webhookSecret.isEmpty()) {
@@ -237,7 +249,11 @@ public class SubscriptionService {
     }
 
     /**
-     * Handles subscription status manually
+     * Updates subscription status manually using Stripe identifiers.
+     *
+     * @param customerId Stripe customer ID
+     * @param subscriptionId Stripe subscription ID (optional)
+     * @param status subscription status string
      */
     public void updateSubscriptionStatus(String customerId, String subscriptionId, String status) {
         Optional<User> userOpt = userRepository.findByStripeCustomerId(customerId);

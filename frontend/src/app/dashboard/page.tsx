@@ -1,5 +1,8 @@
 "use client";
 
+/**
+ * Dashboard overview page for authenticated users.
+ */
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Box, Button, Paper, Stack, Typography, CircularProgress, Alert, Chip } from "@mui/material";
@@ -8,6 +11,11 @@ import { DashboardLayout } from "@/components/dashboard-layout";
 import { MailItem, Booking, User } from "@/types";
 import { API_URL } from "@/config/constants";
 
+/**
+ * Renders the dashboard overview with stats and upcoming bookings.
+ *
+ * @returns page component
+ */
 export default function DashboardContent() {
   const theme = useTheme();
   const router = useRouter();

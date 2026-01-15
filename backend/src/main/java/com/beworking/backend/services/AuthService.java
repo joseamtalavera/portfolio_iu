@@ -13,6 +13,9 @@ import org.springframework.web.server.ResponseStatusException;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
+/**
+ * Authentication service for user registration and login.
+ */
 @Service
 public class AuthService {
 
@@ -21,6 +24,14 @@ public class AuthService {
     private final AuthenticationManager authenticationManager; // AuthenticationManager is responsible for authenticating users.
     private final JwtUtil jwtUtil;
 
+    /**
+     * Creates the service with required dependencies.
+     *
+     * @param userRepository user repository
+     * @param passwordEncoder password encoder
+     * @param authenticationManager authentication manager
+     * @param jwtUtil JWT utility
+     */
     public AuthService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        AuthenticationManager authenticationManager,
@@ -31,6 +42,13 @@ public class AuthService {
         this.jwtUtil = jwtUtil;
     }
 
+    /**
+     * Registers a new user if the email is not already in use.
+     *
+     * @param request registration payload
+     * @return registration response
+     * @throws ResponseStatusException when email already exists
+     */
     public AuthRegisterResponse register(AuthRegisterRequest request) {
         if (userRepository.existsByEmail(request.email())) {
             throw new ResponseStatusException(BAD_REQUEST, "Email already exists");
@@ -44,6 +62,13 @@ public class AuthService {
         return new AuthRegisterResponse("User registered successfully", saved.getId());
     }
 
+    /**
+     * Authenticates credentials and returns a JWT and user profile summary.
+     *
+     * @param request login payload
+     * @return login response with JWT
+     * @throws ResponseStatusException when credentials are invalid
+     */
     public AuthLoginResponse login(AuthLoginRequest request) {
         try {
             authenticationManager.authenticate(
