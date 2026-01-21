@@ -16,7 +16,7 @@ import {
   Typography,
 } from "@mui/material";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
-import WarningAmberIcon from "@mui/icons-material/WarningAmber";
+import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import LocationCityIcon from "@mui/icons-material/LocationCity";
 import MarkEmailReadIcon from "@mui/icons-material/MarkEmailRead";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
@@ -211,7 +211,7 @@ export default function Home() {
                     variant="contained"
                     fullWidth
                     disabled={loading}
-                    startIcon={<WarningAmberIcon />}
+                    startIcon={<SendRoundedIcon />}
                     sx={{
                       bgcolor: theme.palette.brand.green,
                       textTransform: "none",

@@ -4,12 +4,10 @@ import com.beworking.backend.dto.ProfileUpdateRequest;
 import com.beworking.backend.dto.UserResponse;
 import com.beworking.backend.entities.User;
 import com.beworking.backend.repositories.UserRepository;
-import org.springframework.security.core.context.SecurityContextHolder; // It holds the Authentication object is authenticated
+import org.springframework.security.core.context.SecurityContextHolder; // It holds the Authentication object if is authenticated
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
-
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 /**
@@ -30,7 +28,7 @@ public class UserService {
     }
 
     /**
-     * Returns the current authenticated user's profile.
+     * Service method that returns the current authenticated user's profile.
      *
      * @return current user profile
      * @throws ResponseStatusException when the user cannot be found

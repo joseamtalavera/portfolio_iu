@@ -74,8 +74,8 @@ public class AuthService {
             authenticationManager.authenticate(
                 // FLOW: Creates UsernamePasswordAuthenticationToken
                 // This token is used by AuthenticationManager.authenticate()
-                // AuthenticationManager uses authenticationProvider (SecurityConfig line 45)
-                // Which uses BCryptPasswordEncoder (SecurityConfig line 68 → 74)
+                // AuthenticationManager uses authenticationProvider (SecurityConfig line 93)
+                // Which uses BCryptPasswordEncoder (SecurityConfig line 107)
                 // This is what compares plain password with hashed password    
                     new UsernamePasswordAuthenticationToken(request.email(), request.password())
             );

@@ -95,8 +95,9 @@
                     │   .name(name)                  │
                     │   .email(email)                │
                     │   .password(hashedPassword)    │
-                    │   .subscriptionStatus("INACTIVE")│
                     │   .build()                     │
+                    │   (subscriptionStatus defaults │
+                    │    to "INACTIVE")              │
                     └───────────────────────────────┘
                                     │
                                     │ 11. Save to database
@@ -139,12 +140,12 @@
                                     │ 17. Create response DTO
                                     ▼
                     ┌───────────────────────────────┐
-                    │   AuthRegisterResponse         │
-                    │   {                            │
+                    │   AuthRegisterResponse          │
+                    │   {                             │
                     │     message: "User registered   │
-                    │               successfully",   │
-                    │     id: 1                      │
-                    │   }                            │
+                    │               successfully",    │
+                    │     userId: 1                   │
+                    │   }                             │
                     └───────────────────────────────┘
                                     │
                                     │ 18. Return HTTP 200 OK
@@ -279,7 +280,7 @@
     Content-Type: application/json
     Body: {
       "message": "User registered successfully",
-      "id": 1
+      "userId": 1
     }
     ```
 

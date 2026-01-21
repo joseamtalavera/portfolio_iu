@@ -14,7 +14,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     /**
      * Lists all bookings for a given user.
      *
-     * @param user owning user
+     * @param user booking user
      * @return list of bookings
      */
     List<Booking> findAllByUser(User user);
