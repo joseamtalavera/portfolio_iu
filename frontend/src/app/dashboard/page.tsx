@@ -110,7 +110,7 @@ export default function DashboardContent() {
     const bookingsThisMonth = bookings.filter((booking) => {
       const bookingDate = new Date(booking.date);
       return bookingDate >= startOfMonth;
-    }).length;
+    }).length; // turns the filtered array into a number to be displayed
 
     // Bookings remaining this month
     const bookingsRemaining = Math.max(0, 5 - bookingsThisMonth);

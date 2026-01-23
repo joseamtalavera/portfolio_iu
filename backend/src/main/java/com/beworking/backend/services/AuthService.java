@@ -71,16 +71,12 @@ public class AuthService {
      */
     public AuthLoginResponse login(AuthLoginRequest request) {
         try {
-            authenticationManager.authenticate(
-                // FLOW: Creates UsernamePasswordAuthenticationToken
-                // This token is used by AuthenticationManager.authenticate()
-                // AuthenticationManager uses authenticationProvider (SecurityConfig line 93)
-                // Which uses BCryptPasswordEncoder (SecurityConfig line 107)
-                // This is what compares plain password with hashed password    
+            authenticationManager.authenticate(   
                     new UsernamePasswordAuthenticationToken(request.email(), request.password())
             );
             User user = userRepository.findByEmail(request.email())
                     .orElseThrow(() -> new ResponseStatusException(UNAUTHORIZED, "Invalid credentials"));
+            // Uses SecurityConfig-provided AuthenticationManager/UserDetailsService/PasswordEncoder.
             String token = jwtUtil.generateToken(user.getEmail(), user.getId());
             return new AuthLoginResponse(token, new UserResponse(
                 user.getId(), 
