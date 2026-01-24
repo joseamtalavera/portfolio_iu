@@ -18,7 +18,6 @@ import {
   ListItemText,
   Stack,
   Toolbar,
-  Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";

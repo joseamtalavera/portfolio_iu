@@ -88,7 +88,7 @@ export default function DashboardContent() {
     fetchData();
   }, [router]);
 
-  // Calculate statistics
+  // Calculate statistics. useMemo hooks caches computed values and recompute only when dependencies change.
   const stats = useMemo(() => {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -116,7 +116,7 @@ export default function DashboardContent() {
     const bookingsRemaining = Math.max(0, 5 - bookingsThisMonth);
 
     // Status of virtual office // assume active till stripe payment is set up
-    const status = user?.subscriptionStatus?.toLocaleLowerCase() || "inactive";
+    const status = user?.subscriptionStatus?.toLocaleLowerCase() || "inactive"; // using "?" if null, it returns undefined instead of crashing
     return {
       deliveriesToday,
       deliveriesThisMonth,
@@ -124,7 +124,7 @@ export default function DashboardContent() {
       bookingsRemaining,
       status,
     };
-  }, [bookings, mailbox, user?.subscriptionStatus]);
+  }, [bookings, mailbox, user?.subscriptionStatus]); //dependency array for recalculations
 
   // Get the upcoming bookings
   const upcomingBookings = useMemo(() => {
