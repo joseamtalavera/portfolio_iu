@@ -177,6 +177,7 @@ export default function BookingsPage() {
     loadBookings();
   }, [router]);
 
+
   // Generate all time options with 30-minute intervals (07:00 to 23:00)
   const allTimeOptions = useMemo(() => {
     const options: string[] = [];
@@ -399,7 +400,18 @@ export default function BookingsPage() {
   };
 
   if (!ready) {
-    return null;
+    return (
+      <DashboardLayout
+        active="bookings"
+        user={user}
+        onLogout={handleLogout}
+        paywallReady={ready}
+      >
+        <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
+          <CircularProgress />
+        </Box>
+      </DashboardLayout>
+    );
   }
 
 
@@ -408,6 +420,7 @@ export default function BookingsPage() {
       active="bookings"
       user={user}
       onLogout={handleLogout}
+      paywallReady={ready}
     >
       <Stack spacing={3} sx={{ width: "100%", maxWidth: "100%" }}>
         <Box>

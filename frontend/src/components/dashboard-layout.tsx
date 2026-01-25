@@ -3,8 +3,8 @@
 /**
  * Dashboard layout with sidebar navigation, top bar, and profile/payment modals.
  */
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { createContext, useContext, useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   AppBar,
   Avatar,
@@ -33,6 +33,12 @@ import PaymentModal from "./paymentModal";
 
 type NavKey = "dashboard" | "mailbox" | "bookings" | "profile" | "__logout__";
 
+const PaymentModalContext = createContext<(() => void) | null>(null);
+
+export function usePaymentModal() {
+  return useContext(PaymentModalContext);
+}
+
 const navItems: { key: NavKey; label: string; icon: React.ReactNode; href?: string }[] = [
   { key: "dashboard", label: "Overview", icon: <DashboardOutlinedIcon />, href: "/dashboard" },
   { key: "mailbox", label: "Mailbox", icon: <MailOutlineIcon />, href: "/mailbox" },
@@ -48,6 +54,7 @@ interface DashboardLayoutProps {
   active: NavKey; // active navigation item. Only one of the navItems keys can be active at a time.
   user?: User | null; // authenticated user data
   onLogout: () => void; // callback function to handle logout
+  paywallReady?: boolean; // whether the page is ready to show the paywall modal. We make sure that the content of the page is visible.
   children: React.ReactNode; // child components to be rendered in the main content area
 }
 
@@ -64,10 +71,13 @@ export function DashboardLayout({
   active,
   user,
   onLogout,
+  paywallReady = true,
   children,
 }: DashboardLayoutProps) {
   const theme = useTheme();
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(user || null);
   const [paymentModalOpen, setPaymentModalOpen] = useState(false); // Array destructuring useState returns an array with two elements: useState(false) → [stateValue, setterFunction]
@@ -101,26 +111,46 @@ export function DashboardLayout({
   }, [profileModalOpen]);
 
   useEffect(() => {
-    // Check if user has an INACTIVE subscription status
-    if (currentUser && currentUser?.subscriptionStatus === "INACTIVE") {
-      setPaymentModalOpen(true); // the modal open and offer the user to pay for the subscription
-    } else {
-      setPaymentModalOpen(false);
-    }
-  }, [currentUser?.subscriptionStatus]);
+    if (!paywallReady) return;
+    const shouldShowPaywall = searchParams.get("paywall") === "1";
+    if (!shouldShowPaywall) return;
 
+    // Defer opening so the page paints first, then the modal appears.
+    if (typeof window !== "undefined") {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setPaymentModalOpen(true);
+        });
+      });
+    } else {
+      setPaymentModalOpen(true);
+    }
+
+    const nextParams = new URLSearchParams(searchParams.toString());
+    nextParams.delete("paywall");
+    const nextQuery = nextParams.toString();
+    router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, { scroll: false });
+  }, [pathname, paywallReady, router, searchParams]);
+
+  const openPaymentModal = () => setPaymentModalOpen(true);
 
   const handleNav = (item: typeof navItems[number]) => {
     if (item.key === "__logout__") {
       onLogout();
       return;
     }
+    const isInactive = (currentUser?.subscriptionStatus ?? "INACTIVE") === "INACTIVE";
     // Open modal for profile when clicking on profile item
     if (item.key === "profile") {
       setProfileModalOpen(true);
       return;
     }
-    if (item.href) router.push(item.href);
+    if (item.href) {
+      const target = isInactive && item.key !== "dashboard"
+        ? `${item.href}?paywall=1`
+        : item.href;
+      router.push(target);
+    }
   };
 
   const handleAvatarClick = () => {
@@ -157,7 +187,8 @@ export function DashboardLayout({
   };
 
   return (
-    <Box sx={{ minHeight: "100vh", display: "flex", bgcolor: theme.palette.brand.lightBg }}>
+    <PaymentModalContext.Provider value={openPaymentModal}>
+      <Box sx={{ minHeight: "100vh", display: "flex", bgcolor: theme.palette.brand.lightBg }}>
       {/* Sidebar */}
       <Box
         sx={{
@@ -265,9 +296,11 @@ export function DashboardLayout({
           open={paymentModalOpen}
           onClose={() => {
             setPaymentModalOpen(false);
+            router.push("/dashboard");
           }}
           onSuccess={handlePaymentSuccess}
         />
-    </Box>
+      </Box>
+    </PaymentModalContext.Provider>
   );
 }

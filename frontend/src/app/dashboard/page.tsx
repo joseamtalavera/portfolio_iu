@@ -149,6 +149,12 @@ export default function DashboardContent() {
     router.push("/login");
   };
 
+  const handleManageBookings = () => {
+    const isInactive = (user?.subscriptionStatus ?? "INACTIVE") === "INACTIVE";
+    const target = isInactive ? "/bookings?paywall=1" : "/bookings";
+    router.push(target);
+  };
+
   if (!loaded) return null;
 
   const statCards = [
@@ -164,6 +170,7 @@ export default function DashboardContent() {
       active="dashboard"
       user={user}
       onLogout={handleLogout}
+      paywallReady={loaded}
     >
       <Stack spacing={3}>
         <Box>
@@ -244,7 +251,7 @@ export default function DashboardContent() {
                   bgcolor: theme.palette.brand.greenHover,
                 },
               }} 
-              onClick={() => router.push("/bookings")}
+              onClick={handleManageBookings}
               >
               Manage Bookings
             </Button>

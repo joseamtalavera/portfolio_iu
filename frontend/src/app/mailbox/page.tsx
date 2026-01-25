@@ -91,13 +91,27 @@ export default function MailboxPage() {
     loadMail(); // loadMail is invoked and the mailbox items are loaded from the API
   }, [router]); // loadMail is invoked when the component mounts or when the router changes
 
-  if (!ready) return null;
+  if (!ready) {
+    return (
+      <DashboardLayout
+        active="mailbox"
+        user={user}
+        onLogout={handleLogout}
+        paywallReady={ready}
+      >
+        <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
+          <CircularProgress />
+        </Box>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout
       active="mailbox"
       user={user}
       onLogout={handleLogout}
+      paywallReady={ready}
     >
       <Stack spacing={3}> {/* Spacing between the components */}
         <Box>
