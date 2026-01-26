@@ -40,7 +40,7 @@ export function FrontLayout({
       }}
     >
       <Header ctaLabel={ctaLabel} ctaHref={ctaHref} hideCta={hideCta} />
-      <Box sx={{ flex: 1 }}>{children}</Box>
+      <Box sx={{ flex: 1, pt: { xs: "56px", md: 0 } }}>{children}</Box>
       <Footer />
     </Box>
   );

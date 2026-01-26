@@ -231,7 +231,12 @@ export default function DashboardContent() {
 
         {/* Upcoming bookings placeholder */}
         <Paper sx={{ p: 3, borderRadius: 3 }}>
-          <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+          <Stack 
+            direction={{xs: "column", sm: "row"}} 
+            justifyContent="space-between" 
+            alignItems={{xs: "strech", sm: "center" }} 
+            spacing={2}
+            sx={{ mb: 2 }}>
             <Box>
               <Typography variant="h6" sx={{ fontWeight: 700 }}>
                 Upcoming bookings
@@ -239,11 +244,12 @@ export default function DashboardContent() {
               <Typography variant="body2" color="text.secondary">
                 {upcomingBookings.length > 0 
                   ? `Your next ${upcomingBookings.length} scheduled reservation${upcomingBookings.length > 1 ? "s": ""}`
-                : "No upcoming bookings. Create a new booking to get started."}
+                : "No upcoming bookings yet."}
               </Typography>
             </Box>
             <Button 
               variant="contained" 
+              fullWidth={{ xs: true, sm: false}}
               sx={{ 
                 textTransform: "none",
                 bgcolor: theme.palette.brand.green,
@@ -270,7 +276,7 @@ export default function DashboardContent() {
               }}
             >
               <Typography variant="body2" color="text.secondary">
-                No upcoming bookings. Create a new booking to get started.
+                Create a booking to get started.
               </Typography>
             </Box>
           ) : (

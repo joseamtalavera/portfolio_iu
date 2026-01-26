@@ -33,6 +33,9 @@ export function Header({ ctaLabel, ctaHref, hideCta = false }: HeaderProps) {
       position="static"
       elevation={0}
       sx={{
+        position: { xs: "fixed", md: "static" },
+        top: { xs: 0, md: "auto" },
+        zIndex: theme.zIndex.appBar,
         bgcolor: "#fff",
         color: theme.palette.brand.dark,
         borderBottom: `1px solid ${theme.palette.brand.borderSoft}`,

@@ -29,6 +29,8 @@ import ProfileModal from "@/components/profileModal";
 import { User } from "@/types";
 import { API_URL } from "@/config/constants";
 import PaymentModal from "./paymentModal";
+import { Drawer, IconButton } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 
 
 type NavKey = "dashboard" | "mailbox" | "bookings" | "profile" | "__logout__";
@@ -81,7 +83,9 @@ export function DashboardLayout({
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(user || null);
   const [paymentModalOpen, setPaymentModalOpen] = useState(false); // Array destructuring useState returns an array with two elements: useState(false) → [stateValue, setterFunction]
+  const [mobileOpen, setMobileOpen] = useState(false);
 
+  const handleMobileToggle = () => setMobileOpen((prev) => !prev);
 
   useEffect(() => {
     if (profileModalOpen) {
@@ -115,7 +119,7 @@ export function DashboardLayout({
     const shouldShowPaywall = searchParams.get("paywall") === "1";
     if (!shouldShowPaywall) return;
 
-    // Defer opening so the page paints first, then the modal appears.
+    // The browser has drawn the page content on screen before the modals is shown
     if (typeof window !== "undefined") {
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
@@ -147,7 +151,7 @@ export function DashboardLayout({
     }
     if (item.href) {
       const target = isInactive && item.key !== "dashboard"
-        ? `${item.href}?paywall=1`
+        ? `${item.href}?paywall=1` // appends ?paywall=1 to the route
         : item.href;
       router.push(target);
     }
@@ -246,6 +250,68 @@ export function DashboardLayout({
         </List>
       </Box>
 
+      {/* Mobile drawer */}
+      <Drawer
+        open={mobileOpen}
+        onClose={handleMobileToggle}
+        ModalProps={{ keepMounted: true }}
+        sx={{
+          display: { xs: "block", md: "none" },
+          "& .MuiDrawer-paper": { width: 230 },
+        }}
+      >
+        <Box sx={{ p: 2 }}>
+          <Box
+            component="img"
+            src="/beworking_logo_clean.svg"
+            alt="BeWorking"
+            sx={{ height: 32, width: "auto", display: "block", mb: 1}}
+          />
+          <Divider />
+        </Box>
+        <List>
+          {navItems.map((item) => (
+            <ListItem key={item.label} disablePadding>
+              <ListItemButton
+                selected={item.key === active}
+                onClick={() => {
+                  handleNav(item);
+                  setMobileOpen(false);
+                }}
+                sx={{
+                  borderRadius: 2,
+                  mx: 1,
+                  my: 0.5,
+                  "&.Mui-selected": {
+                    bgcolor: theme.palette.brand.accentSoft,
+                    color: theme.palette.brand.green,
+                  },
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    color: item.key === active ? theme.palette.brand.green : theme.palette.brand.muted,
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText
+                  primary={item.label}
+                  sx={{
+                    color: item.key === active ? theme.palette.brand.green : theme.palette.brand.muted,
+                    "& .MuiListItemText-primary": {
+                      color: item.key === active ? theme.palette.brand.green : theme.palette.brand.muted,
+                    },
+                  }}
+                />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+
+      </Drawer>
+
+
       {/* Main Content */}
       <Box 
         sx={{ 
@@ -261,7 +327,13 @@ export function DashboardLayout({
           elevation={0}
           sx={{ bgcolor: "#fff", color: "inherit", borderBottom: `1px solid ${theme.palette.brand.border}` }}
         >
-          <Toolbar sx={{ justifyContent: "flex-end" }}>
+          <Toolbar sx={{ justifyContent: "space-between" }}>
+            <IconButton
+              onClick={handleMobileToggle}
+              sx={{ display: { xs: "inline-flex", md: "none" }, mr: 1 }}
+            >
+              <MenuIcon />
+            </IconButton>
             <Avatar 
               sx={{ bgcolor: theme.palette.brand.green, cursor: "pointer" }}
               onClick={handleAvatarClick}
