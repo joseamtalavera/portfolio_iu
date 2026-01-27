@@ -325,7 +325,14 @@ export function DashboardLayout({
         <AppBar
           position="static"
           elevation={0}
-          sx={{ bgcolor: "#fff", color: "inherit", borderBottom: `1px solid ${theme.palette.brand.border}` }}
+          sx={{ 
+            position: { xs: "fixed", md: "static" },
+            top: { xs: 0, md: "auto" },
+            zIndex: theme.zIndex.appBar,
+            bgcolor: "#fff", 
+            color: "inherit", 
+            borderBottom: `1px solid ${theme.palette.brand.border}` 
+          }}
         >
           <Toolbar sx={{ justifyContent: "space-between" }}>
             <IconButton
@@ -334,6 +341,7 @@ export function DashboardLayout({
             >
               <MenuIcon />
             </IconButton>
+            <Box sx={{ flex: 1 }} /> {/* Spacer to push avatar to the right */}
             <Avatar 
               sx={{ bgcolor: theme.palette.brand.green, cursor: "pointer" }}
               onClick={handleAvatarClick}
@@ -351,6 +359,7 @@ export function DashboardLayout({
             width: "100%", 
             maxWidth: "100%", 
             px: { xs: 2, sm: 3 },
+            pt: { xs: "80px", md: 3 }, // Add padding-top on mobile to account for fixed AppBar
             overflow: "hidden", // Prevent horizontal overflow
             boxSizing: "border-box",
           }}
@@ -370,7 +379,6 @@ export function DashboardLayout({
             setPaymentModalOpen(false);
             router.push("/dashboard");
           }}
-          onSuccess={handlePaymentSuccess}
         />
       </Box>
     </PaymentModalContext.Provider>

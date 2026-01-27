@@ -3,7 +3,7 @@
 /**
  * Subscription payment modal for initiating Stripe checkout.
  */
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { 
     Dialog, 
     DialogTitle, 
@@ -26,7 +26,6 @@ import { API_URL } from "@/config/constants";
 interface PaymentModalProps {
     open: boolean;
     onClose: () => void;
-    onSuccess: () => void;
 }
 
 /**
@@ -34,10 +33,9 @@ interface PaymentModalProps {
  *
  * @param open whether the modal is open
  * @param onClose callback to close the modal
- * @param onSuccess callback after successful payment
  * @returns modal element
  */
-export default function PaymentModal({ open, onClose, onSuccess}: PaymentModalProps) {
+export default function PaymentModal({ open, onClose }: PaymentModalProps) {
     const theme = useTheme();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -50,7 +48,6 @@ export default function PaymentModal({ open, onClose, onSuccess}: PaymentModalPr
             const token = localStorage.getItem("jwt");
             if (!token) {
                 setError("No authentication token found");
-                setLoading(false);
                 return;
             }
 
