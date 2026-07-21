@@ -1,8 +1,8 @@
 package com.beworking.backend.security;
 
-import io.jsonwebtoken.Claims; // Utility class for generating, validating, and extracting claims from JSON Web Tokens (JWTs) used in authentication.
+import io.jsonwebtoken.Claims; // Interface holding a token's payload claims (the sub, userId, iat, exp key/values).
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm; // Provides methods to create and verify JWTs using a specified signature algorithm.
+import io.jsonwebtoken.SignatureAlgorithm; // Enum of the available signing algorithms; this app uses HS256.
 import io.jsonwebtoken.io.Decoders; // Utility class for decoding Base64-encoded strings, commonly used for decoding secret keys in JWT operations.
 import io.jsonwebtoken.security.Keys; // Utility class for generating cryptographic keys for signing JWTs.
 import org.springframework.beans.factory.annotation.Value; // Annotation to inject values from application properties into class fields or constructor parameters.
@@ -24,7 +24,6 @@ import java.util.function.Function; // Functional interface representing a funct
  */
 @Component
 public class JwtUtil {
-
     private final Key signingKey;
     private final long expirationMs;
 
@@ -50,7 +49,7 @@ public class JwtUtil {
     public String generateToken(String email, Long userId) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expirationMs);
-        return Jwts.builder() // Think of builder as a tool the create a blank template for the JWT.
+        return Jwts.builder() // Builder that assembles the token from the claims set below.
                 .setSubject(email)
                 .addClaims(Map.of("userId", userId))
                 .setIssuedAt(now)

@@ -18,10 +18,12 @@ public record UserResponse(
     Long id,
     String name,
     String email,
-    // fields for stripe integration
-    String phone, 
-    String company, 
-    String billingAddress, 
+    // Optional profile fields, shown on the account page.
+    String phone,
+    String company,
+
+    // Billing address, collected for Stripe checkout.
+    String billingAddress,
     String billingCity,
     String billingCountry,
     String billingPostalCode,

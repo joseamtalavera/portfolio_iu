@@ -10,8 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class BeWorkingApplication {
 
 	/**
-	 * Bootstraps the Spring application and starts the embedded server.
-	 *
+	 * Bootstraps the Spring application and start the app: find my classes, wire them together, and start listening for requests on port 8081.
 	 * @param args command-line arguments (unused)
 	 */
 	public static void main(String[] args) {

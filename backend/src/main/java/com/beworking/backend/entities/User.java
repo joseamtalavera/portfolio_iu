@@ -19,7 +19,8 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // database's auto increment feature to generate primary keys
     private Long id;
 
-    @Column(nullable = false)
+    // length mirrors @Size(max = 100) on AuthRegisterRequest so DTO and schema agree.
+    @Column(nullable = false, length = 100)
     private String name;
 
     @Column(nullable = false, unique = true)
@@ -40,12 +41,14 @@ public class User {
 
     private LocalDateTime subscriptionEndDate;
 
-    // Fields for Stripe integration
+    // Optional profile fields, shown on the account page.
     private String phone;
-    
+
     private String company;
 
+    // Billing address, sent to Stripe at checkout.
     private String billingAddress;
+    
     private String billingCity;
 
     private String billingCountry;

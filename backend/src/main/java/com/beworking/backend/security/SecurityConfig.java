@@ -51,17 +51,26 @@ public class SecurityConfig {
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        // Enable CORS so the separate Next.js frontend (localhost:3000) may call this API.
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                // CSRF disabled: safe here because auth is a stateless JWT in the Authorization
+                // header, not a cookie — there is no auto-attached credential for a forged request to abuse.
                 .csrf(csrf -> csrf.disable())
-                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+                // sameOrigin (not disable): let this app frame its own pages (e.g. the /pdfs) while
+                // blocking foreign sites from iframing us — clickjacking defense.
+                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
+                // No server-side session: identity travels in the JWT and is rebuilt per request.
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // Default-deny: every request needs authentication except the explicit public allowlist below.
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/auth/register", "/auth/login").permitAll()
-                        .requestMatchers("/api/subscription/webhook").permitAll()
-                        .requestMatchers("/pdfs/**", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                        .requestMatchers("/api/auth/**", "/auth/register", "/auth/login").permitAll() // no token exists before login
+                        .requestMatchers("/api/subscription/webhook").permitAll() // Stripe callback has no JWT; verified by signature instead
+                        .requestMatchers("/pdfs/**").permitAll() // static mailbox PDFs
                         .anyRequest().authenticated()
                 )
+                // Provider that verifies email + password at login (DB lookup + BCrypt).
                 .authenticationProvider(authenticationProvider())
+                // Run the JWT filter before the password-login filter so token auth is applied first on every request.
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
