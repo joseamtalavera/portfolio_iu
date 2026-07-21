@@ -1,0 +1,16 @@
+# Environment files — secrets never belong in version control
+.env
+.env.local
+*.env
+!*.env.example
+
+# Personal working notes, not part of the deliverable
+plan.md
+notes/walkthrough-notes.md
+
+# OS and editor noise
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+*.iml
