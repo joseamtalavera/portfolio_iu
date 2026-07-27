@@ -4,6 +4,8 @@ import com.beworking.backend.entities.Booking;
 import com.beworking.backend.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,4 +29,17 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
      * @return optional booking
      */
     Optional<Booking> findByIdAndUser_Id(Long id, Long userId);
+
+    /**
+     * Checks whether an existing booking for the same product and date overlaps
+     * the given period. Two periods overlap when each starts before the other ends.
+     *
+     * @param product product or resource name
+     * @param date booking date
+     * @param endHour end of the period being requested
+     * @param startHour start of the period being requested
+     * @return true when an overlapping booking already exists
+     */
+    boolean existsByProductAndDateAndStartHourLessThanAndEndHourGreaterThan(
+            String product, LocalDate date, LocalTime endHour, LocalTime startHour);
 }

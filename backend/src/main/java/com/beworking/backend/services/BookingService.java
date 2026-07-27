@@ -35,8 +35,21 @@ public class BookingService {
      * @param user current user
      * @param request booking request payload
      * @return created booking response
+     * @throws ResponseStatusException when the period is invalid or already booked
      */
     public BookingCreatedResponse createBooking(User user, BookingRequest request) {
+        // Bean Validation checks each field on its own; these two rules compare
+        // fields against each other and against what is already stored.
+        if (!request.endHour().isAfter(request.startHour())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "End hour must be after start hour");
+        }
+
+        // Two periods overlap when each one starts before the other one ends.
+        if (bookingRepository.existsByProductAndDateAndStartHourLessThanAndEndHourGreaterThan(
+                request.product(), request.date(), request.endHour(), request.startHour())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "That product is already booked for the requested period");
+        }
+
         Booking booking = Booking.builder()
                 .user(user)
                 .product(request.product())
@@ -57,7 +70,8 @@ public class BookingService {
      * @throws ResponseStatusException when booking is not found or not owned by user
      */
     public void deleteBooking(User user, Long bookingId) {
-        // Find booking by ID and user ID using standard Spring Data JPA method
+        // Ownership is part of the WHERE clause, not an if-statement afterwards:
+        // another user's booking is never loaded, so no code path can skip the check.
         Booking booking = bookingRepository.findByIdAndUser_Id(bookingId, user.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Booking not found or you are not authorized to delete this booking"));
         
