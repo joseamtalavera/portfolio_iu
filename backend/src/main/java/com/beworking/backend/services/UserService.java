@@ -92,7 +92,7 @@ public class UserService {
      * @throws ResponseStatusException when the user cannot be resolved
      */
     public User getCurrentUser() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal(); //
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal(); 
         String email;
         if (principal instanceof UserDetails userDetails) {
             email = userDetails.getUsername();

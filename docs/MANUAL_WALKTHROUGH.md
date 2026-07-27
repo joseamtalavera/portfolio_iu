@@ -1,4 +1,4 @@
-# UI Testing Script
+# Manual Walkthrough — exercising the running app
 
 ## Step-by-Step Test Script
 

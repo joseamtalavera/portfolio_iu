@@ -146,7 +146,9 @@ cd backend
 | [`docs/SETUP.md`](docs/SETUP.md) | Detailed environment setup |
 | [`docs/API.md`](docs/API.md) | REST endpoints |
 | [`docs/architecture/overview.md`](docs/architecture/overview.md) | System architecture |
-| [`docs/TESTING.md`](docs/TESTING.md) | Test strategy |
+| [`docs/TEST_PLAN.md`](docs/TEST_PLAN.md) | Test strategy, coverage matrix and acceptance cases |
+| [`docs/TEST_CASES.csv`](docs/TEST_CASES.csv) | The acceptance cases as a spreadsheet |
+| [`docs/MANUAL_WALKTHROUGH.md`](docs/MANUAL_WALKTHROUGH.md) | Step-by-step tour of the running app |
 | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) | Common problems |
 | [`docs/REGISTRATION_FLOW.md`](docs/REGISTRATION_FLOW.md) · [`LOGIN_FLOW.md`](docs/LOGIN_FLOW.md) · [`DASHBOARD_FLOW.md`](docs/DASHBOARD_FLOW.md) · [`STRIPE_PAYMENT_FLOW.md`](docs/STRIPE_PAYMENT_FLOW.md) | Feature walkthroughs |
 | [`docs/runbook/README.md`](docs/runbook/README.md) | Operational runbooks |
