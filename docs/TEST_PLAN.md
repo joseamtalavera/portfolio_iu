@@ -3,9 +3,6 @@
 This document states **what is tested, at which level, and why**. It is written before the
 tests so that coverage is a decision rather than an accident.
 
-A companion spreadsheet, [`TEST_CASES.csv`](./TEST_CASES.csv), contains the same acceptance
-cases in a format that opens directly in Excel.
-
 For the step-by-step manual walkthrough of the running application, see
 [`MANUAL_WALKTHROUGH.md`](./MANUAL_WALKTHROUGH.md).
 
@@ -87,6 +84,9 @@ future refactor starts trusting a client-supplied user id.
 
 ### 3.2 Authentication rules — `AuthServiceTest` (unit)
 
+All five live in `backend/src/test/java/com/beworking/backend/services/AuthServiceTest.java`,
+each tagged with its `// TEST_PLAN A#`.
+
 | # | Test | Rule protected | Expected |
 |---|---|---|---|
 | A1 | `registerRejectsDuplicateEmail` | One account per email | `400`, no second row saved |
@@ -99,6 +99,9 @@ A4 is the highest-value test in the suite: it protects a property that is invisi
 use and would be silently destroyed by a well-meaning "clearer error messages" change.
 
 ### 3.3 HTTP contract — `BookingControllerTest` (`@WebMvcTest`) — *deferred*
+
+Planned file: `backend/src/test/java/com/beworking/backend/controllers/BookingControllerTest.java`
+(not yet written — see the deferral note below).
 
 | # | Test | Rule protected | Expected |
 |---|---|---|---|
@@ -131,23 +134,60 @@ Tooling: **Vitest + React Testing Library** (the runner Next.js documents for Re
 test renders a single component in a jsdom DOM, simulates a user action, and asserts what the user
 would see — no real browser and no real backend.
 
-### 4.1 Auth component tests — `RegisterForm` / `LoginForm`
+### 4.1 Auth component tests — landing/register page and login page
 
-| # | Test | Rule protected |
-|---|---|---|
-| F1 | Register form blocks submit and shows a field error for a too-short password | The client mirrors the server's `@Size(min = 6)` rule before a round trip |
-| F2 | Register form submits when the details are valid | The happy path reaches the API |
-| F3 | Login form shows "Invalid credentials" on a rejected login, without crashing | The server's `401` meaning survives to the screen |
-| F4 | Login form submits when credentials are filled in | The happy path reaches the API |
+The register form is part of the landing page (`app/page.tsx`); login is its own page
+(`app/login/page.tsx`). Each test carries a `// TEST_PLAN F#` tag, so the row and the code
+can be found from either direction.
 
-### 4.2 Booking component tests — `BookingForm`
+| # | Test | Rule protected | Where |
+|---|---|---|---|
+| F1 | Register form blocks submit and shows a field error for a too-short password (passing) | The client mirrors the server's `@Size(min = 6)` rule before a round trip | `frontend/src/app/page.test.tsx` |
+| F2 | Register form submits when the details are valid (passing) | The happy path reaches the API | `frontend/src/app/page.test.tsx` |
+| F3 | Login form shows "Invalid credentials" on a rejected login, without crashing (passing) | The server's `401` meaning survives to the screen | `frontend/src/app/login/page.test.tsx` |
+| F4 | Login form submits when credentials are filled in (passing) | The happy path reaches the API | `frontend/src/app/login/page.test.tsx` |
 
-| # | Test | Rule protected |
-|---|---|---|
-| F5 | Booking form blocks submit when end ≤ start | The client mirrors the server rule, so the user sees the error before a round trip |
-| F6 | A 409 from the API renders "already booked", not a generic failure | The server's meaning survives to the screen |
+### 4.2 Booking component test — bookings page
 
-### 4.3 Deliberately manual — mailbox and payment
+The booking form lives on the bookings page (`app/bookings/page.tsx`). It was **planned** as two
+tests (F5, F6); after reading the implementation, F5 was retired and F6 was rewritten to match the
+code the page actually runs — testing behaviour that does not exist would be dishonest coverage.
+
+| # | Test | Rule protected | Where |
+|---|---|---|---|
+| F6 | Choosing a slot that overlaps an existing booking opens the "Time Slot Already Booked" dialog, before any request is sent | The client blocks a double booking and says so, without a wasted round trip | `frontend/src/app/bookings/page.test.tsx` |
+
+**Why F5 was retired.** F5 was to assert the client blocks an end ≤ start choice. There is no such
+client check: start and end are *dropdowns* filled only with valid, available half-hour slots, so
+an end-before-start choice is not selectable in the first place. That rule is enforced and tested
+on the **backend** (B1, B2).
+
+**What F6 really tests.** The original F6 assumed a `409` from the API renders "already booked". In
+fact the dialog is produced by a *local* overlap check (`checkForConflict`) that runs **before** any
+request; a real `409` would surface as a generic alert. So F6 now drives the true path: it seeds one
+existing booking (10:30–11:30 via a mocked `fetch`), fills the form with an overlapping 10:00–11:30,
+clicks Create, and asserts the conflict dialog appears. Server-side overlap is separately covered by
+**B3** and the manual cases (M10, M11).
+
+### 4.3 Validation unit tests — the shared validators (`auth.test.ts`)
+
+Beneath the component tests sit the pure functions they depend on: `validateRegister` and
+`validateLogin`. These are tested in isolation — no DOM, no render — because a validator is a
+plain function whose every branch can be pinned with one input. F1–F4 prove the form *wires* the
+validator to the screen; V1–V7 prove the validator itself is correct. All seven live in
+`frontend/src/utils/auth.test.ts`, each tagged with its `// TEST_PLAN V#`.
+
+| # | Test | Rule protected | Expected |
+|---|---|---|---|
+| V1 | `validateRegister` rejects a password shorter than 6 chars | Mirrors the server's `@Size(min = 6)` | `"Password must be at least 6 characters"` |
+| V2 | `validateRegister` accepts valid input | The happy path returns no error | `null` |
+| V3 | `validateRegister` rejects an empty name | Name is required | `"Name is required"` |
+| V4 | `validateRegister` rejects an email without `@` | Basic email shape | `"Invalid email address"` |
+| V5 | `validateLogin` rejects an email without `@` | Basic email shape | `"Invalid email address"` |
+| V6 | `validateLogin` rejects an empty password | Password is required | `"Password is required"` |
+| V7 | `validateLogin` accepts valid input | The happy path returns no error | `null` |
+
+### 4.4 Deliberately manual — mailbox and payment
 
 Mailbox and payment are exercised through the manual cases (M19 for mailbox; the payment flow in the
 screencast against the Stripe sandbox). Automating payment is intentionally out of scope: faking the
@@ -160,8 +200,7 @@ change and assert nothing about behaviour.
 
 ## 5. Manual acceptance cases
 
-The table below is the "click this, expect that" set — see [`TEST_CASES.csv`](./TEST_CASES.csv)
-for the spreadsheet version.
+The table below is the "click this, expect that" set.
 
 | ID | Area | Precondition | Action | Expected result |
 |---|---|---|---|---|
@@ -213,7 +252,9 @@ correct rather than merely present; M16 and M18 together prove that a refusal re
 | `BookingServiceTest` | Complete — B1–B8 written and passing |
 | `AuthServiceTest` | Complete — A1–A5 written and passing |
 | `BookingControllerTest` | Deferred — section 3.3. The rules these would cover are already proven by the unit tests and the manual cases; held back pending review feedback rather than duplicating coverage |
-| Frontend (`RegisterForm`, `LoginForm`, `BookingForm`) | In progress — Vitest being set up; F1–F6 (section 4) |
+| Frontend validators (`utils/auth.test.ts`) | Complete — V1–V7 written and passing (section 4.3) |
+| Frontend auth components (`app/page.test.tsx`, `app/login/page.test.tsx`) | Complete — F1–F4 written and passing |
+| Frontend booking component (`app/bookings/page.test.tsx`) | Complete — F6 written and passing; F5 retired as a backend-covered rule (section 4.2) |
 
 Run the backend suite with:
 
