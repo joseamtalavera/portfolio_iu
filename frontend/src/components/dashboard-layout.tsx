@@ -143,7 +143,9 @@ export function DashboardLayout({
       onLogout();
       return;
     }
-    const isInactive = (currentUser?.subscriptionStatus ?? "INACTIVE") === "INACTIVE";
+    // Only gate a KNOWN-inactive user. While the user is still loading (null),
+    // treat as not-inactive so the paywall doesn't flash before data arrives.
+    const isInactive = currentUser?.subscriptionStatus === "INACTIVE";
     // Open modal for profile when clicking on profile item
     if (item.key === "profile") {
       setProfileModalOpen(true);

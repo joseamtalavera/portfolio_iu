@@ -10,10 +10,6 @@ import {
   Box,
   Button,
   CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Divider,
   List,
   ListItem,
@@ -40,8 +36,6 @@ export default function MailboxPage() {
   const [mail, setMail] = useState<MailItem[]>([]); // mailbox items for API
   const [loading, setLoading] = useState(true); // show loading spinner while fetching data
   const [error, setError] = useState<string | null>(null); // error message from API
-  const [pdfUrl, setPdfUrl] = useState<string | undefined>(undefined); // control dialog for PDF attachment
-  const [pdfOpen, setPdfOpen] = useState(false); // control dialog visibility
   const [attachmentError, setAttachmentError] = useState<string | null>(null); // error is displayed if no attachment is available
 
   const handleLogout = () => {
@@ -180,8 +174,10 @@ export default function MailboxPage() {
                               return;
                             }
                             setAttachmentError(null);
-                            setPdfUrl(item.pdfUrl);
-                            setPdfOpen(true);
+                            // Open the PDF in a new tab. The backend serves /pdfs with
+                            // X-Frame-Options: SAMEORIGIN, so it can't be embedded in an
+                            // iframe from the frontend origin — a new tab avoids framing.
+                            window.open(item.pdfUrl, "_blank", "noopener,noreferrer");
                           }}
                         >
                           Open
@@ -198,45 +194,6 @@ export default function MailboxPage() {
       </Stack>
 
       {attachmentError && <Alert severity="warning">{attachmentError}</Alert>} {/* Attachment error message */}
-
-      {pdfOpen && pdfUrl && (
-        <Dialog open onClose={() => setPdfOpen(false)} fullWidth maxWidth="md"> {/* Dialog is a container for the mailbox attachment */}
-          <DialogTitle>Mailbox attachment</DialogTitle> {/* Title of the mailbox attachment */}
-          <DialogContent dividers sx={{ height: "70vh", p: 0 }}>
-            <iframe // when the src points to a PDF the browser's build-in PDF viewer is used
-              title="Mail PDF" // Title of the mailbox attachment 
-              src={pdfUrl}
-              style={{ border: "none", width: "100%", height: "100%" }}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button 
-              onClick={() => setPdfOpen(false)}
-              sx={{ textTransform: "none" }}
-            >
-              Close
-            </Button>
-            <Button 
-              href={pdfUrl} 
-              target="_blank" 
-              rel="noreferrer" 
-              variant="outlined"
-              sx={{
-                textTransform: "none",
-                borderColor: theme.palette.brand.green,
-                color: theme.palette.brand.green,
-                "&:hover": {
-                  borderColor: theme.palette.brand.greenHover,
-                  color: theme.palette.brand.greenHover,
-                  bgcolor: theme.palette.brand.accentSoft,
-                },
-              }}
-            >
-              Open In New Tab
-            </Button>
-          </DialogActions>
-        </Dialog>
-      )}
     </DashboardLayout>
   );
 }

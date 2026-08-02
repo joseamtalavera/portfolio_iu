@@ -158,12 +158,12 @@ export function Availability({ slots, rooms }: AvailabilityProps) {
                           width: "100%",
                           borderRadius: 2,
                           border: "1px solid",
-                          borderColor: isBooked ? theme.palette.error.light : theme.palette.brand.border,
-                          bgcolor: isBooked ? theme.palette.error.light : theme.palette.brand.lightBg,
+                          borderColor: isBooked ? theme.palette.error.main : theme.palette.brand.border,
+                          bgcolor: isBooked ? theme.palette.error.main : theme.palette.brand.lightBg,
                         }}
                       >
                         {isBooked ? (
-                          <Typography variant="caption" fontWeight={600} color={theme.palette.error.main} noWrap>
+                          <Typography variant="caption" fontWeight={600} color={theme.palette.common.white} noWrap>
                             Booked
                           </Typography>
                         ) : null}
