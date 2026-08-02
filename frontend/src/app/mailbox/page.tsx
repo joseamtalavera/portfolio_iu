@@ -143,7 +143,8 @@ export default function MailboxPage() {
                   {mail.map((item) => (
                     <React.Fragment key={item.id}> {/* React.Fragment is a container for the mailbox items */}
                       <ListItem alignItems="flex-start" sx={{ py: 1.5, px: 2, gap: 2 }}>
-                        <ListItemText // ListItemText is a container for the mailbox items 
+                        <ListItemText // ListItemText is a container for the mailbox items
+                          slotProps={{ secondary: { component: "div" } }} // render secondary as <div> so the two <Typography> (<p>) inside are valid HTML
                           primary={
                             <Typography variant="subtitle1" sx={{ fontWeight: 700 }}> {/* Subject of the mailbox item */}
                               {item.subject}

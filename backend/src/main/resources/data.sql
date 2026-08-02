@@ -5,7 +5,7 @@ VALUES (
     'Tutor',
     'tutor@be-working.com',
     '$2b$10$qIg9sIH4IcV7JbvQC1GJZ.mwV2MUseIg.YONAd07VRLXmTEM7tlzC', -- bcrypt("tutor1234")
-    'INACTIVE'
+    'ACTIVE'
 )
 ON CONFLICT (email) DO NOTHING;
 
