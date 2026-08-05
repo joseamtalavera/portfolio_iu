@@ -81,6 +81,33 @@ back to a predictable signing key.
 > yourself, create a free Stripe account, switch to **test mode**, and supply your own keys.
 > Test mode moves no real money — use card `4242 4242 4242 4242` with any future expiry and CVC.
 
+#### Enabling the full subscription flow (Stripe test mode)
+
+Supplying the keys above is **not enough** on its own. Stripe confirms a payment by
+calling your backend on a **webhook**, and that is what flips a user's
+`subscriptionStatus` to `ACTIVE`. Locally, Stripe cannot reach `localhost` unless you
+forward its events — so **without the step below, checkout succeeds but the account
+never activates** (bookings stay behind the paywall).
+
+1. **Install the Stripe CLI** and log in:
+   ```bash
+   stripe login
+   ```
+2. **Forward webhook events** to the backend — keep this running in its own terminal:
+   ```bash
+   stripe listen --forward-to localhost:8081/api/subscription/webhook
+   ```
+   On start it prints a signing secret, `whsec_…`.
+3. **Match the secret.** Copy that `whsec_…` into `STRIPE_WEBHOOK_SECRET` in
+   `backend/.env`, then **restart the backend** — the value is read at startup. If it
+   doesn't match, the webhook is rejected with `400` and nothing activates.
+4. **Pay in test mode.** Subscribe from the app and use card
+   `4242 4242 4242 4242`, any future expiry, any CVC. The `stripe listen` terminal
+   should show `checkout.session.completed → 200`, and the account becomes `ACTIVE`.
+
+You need three processes running for this: the backend, the frontend, and
+`stripe listen`.
+
 ### 3. Configure the frontend
 
 ```bash

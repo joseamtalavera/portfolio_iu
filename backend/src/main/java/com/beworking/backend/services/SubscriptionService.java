@@ -12,6 +12,8 @@ import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
 import com.stripe.param.CustomerCreateParams;
 import com.stripe.param.checkout.SessionCreateParams;
+import com.stripe.exception.EventDataObjectDeserializationException;
+import com.stripe.model.StripeObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -154,11 +156,21 @@ public class SubscriptionService {
         }
     }
 
+    private StripeObject deserialize(Event event) {
+        return event.getDataObjectDeserializer().getObject().orElseGet(() -> {
+            try {
+                return event.getDataObjectDeserializer().deserializeUnsafe();
+            } catch (EventDataObjectDeserializationException e) {
+                return null;
+            }
+        });
+    }
+
     /**
      * Handles the checkout.session.completed event
      */
     private void handleCheckoutSessionCompleted(Event event) {
-        Session session = (Session) event.getDataObjectDeserializer().getObject().orElse(null);
+        Session session = (Session) deserialize(event);
 
         if (session == null) {
             return;
@@ -186,7 +198,7 @@ public class SubscriptionService {
      * Handles the customer.subscription.updated event
      */
     private void handleSubscriptionUpdated(Event event) {
-        Subscription subscription = (Subscription) event.getDataObjectDeserializer().getObject().orElse(null);
+        Subscription subscription = (Subscription) deserialize(event);
 
         if (subscription == null) {
             return;
@@ -232,7 +244,7 @@ public class SubscriptionService {
      * Handles the customer.subscription.deleted event
      */
     private void handleSubscriptionDeleted(Event event) {
-        Subscription subscription = (Subscription) event.getDataObjectDeserializer().getObject().orElse(null);
+        Subscription subscription = (Subscription) deserialize(event);
 
         if (subscription == null) {
             return;

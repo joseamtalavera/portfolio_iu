@@ -87,6 +87,33 @@ export function DashboardLayout({
 
   const handleMobileToggle = () => setMobileOpen((prev) => !prev);
 
+  // Confirm the subscription status against the server on mount, so the paywall
+  // never gates on a stale localStorage snapshot — e.g. one written at login or on
+  // the Stripe success page before the activation webhook had landed. Every
+  // authenticated page renders this layout, so this refreshes on each navigation.
+  useEffect(() => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("jwt") : null;
+    if (!token) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const response = await fetch(`${API_URL}/user/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!response.ok) return;
+        const userData = await response.json() as User;
+        if (cancelled) return;
+        setCurrentUser(userData);
+        localStorage.setItem("user", JSON.stringify(userData));
+      } catch {
+        // Network error: keep the cached user; navigation still works, just unrefreshed.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   useEffect(() => {
     if (profileModalOpen) {
       const fetchUserProfile = async () => {
