@@ -23,13 +23,12 @@ All API endpoints are prefixed with `/api`. Base URL: `http://localhost:8081/api
 ```json
 {
   "message": "User registered successfully",
-  "user": {
-    "id": 1,
-    "name": "John Doe",
-    "email": "john@example.com"
-  }
+  "userId": 1
 }
 ```
+
+Registration returns only a status message and the new user's id — no token. The
+user logs in as a separate step to obtain a JWT.
 
 **cURL Command:**
 ```bash
@@ -306,6 +305,60 @@ curl -X PUT http://localhost:8081/api/user/profile \
     "company": "My Company"
   }'
 ```
+
+---
+
+## Subscription Endpoints (Stripe)
+
+Stripe runs **server-side only**. No secret key ships in the repository; the
+backend reads `stripe.secret-key`, `stripe.price-id` and `stripe.webhook-secret`
+from `backend/.env`. With those unset, both endpoints return `500` and the rest of
+the API is unaffected.
+
+### 9. Create Checkout Session
+
+**Endpoint**: `POST /api/subscription/create-checkout`
+
+**Authentication**: Required (Bearer token)
+
+**Request Body**: none — the user is taken from the JWT.
+
+**Response (200 OK):**
+```json
+{
+  "url": "https://checkout.stripe.com/c/pay/cs_test_a1B2c3..."
+}
+```
+The frontend redirects the browser to this URL. Returns `500` if Stripe keys are
+not configured.
+
+**cURL Command:**
+```bash
+curl -X POST http://localhost:8081/api/subscription/create-checkout \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE"
+```
+
+---
+
+### 10. Stripe Webhook
+
+**Endpoint**: `POST /api/subscription/webhook`
+
+**Authentication**: Not required (public) — the caller is Stripe, not a user. Trust
+comes from the `Stripe-Signature` header, verified against `stripe.webhook-secret`;
+an invalid signature returns `400`.
+
+**Request Body**: the raw Stripe event JSON (sent by Stripe, not by clients).
+
+**Handled events:**
+
+| Event | Effect on the user |
+|-------|--------------------|
+| `checkout.session.completed` | `subscriptionStatus` → `ACTIVE` |
+| `customer.subscription.updated` | → `ACTIVE` / `PAST_DUE` / `CANCELLED` |
+| `customer.subscription.deleted` | → `EXPIRED` |
+
+**Response (200 OK):** `Webhook processed successfully`
 
 ---
 
