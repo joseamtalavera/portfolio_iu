@@ -12,11 +12,12 @@ Provides the REST API for authentication, users, mailbox, bookings, and subscrip
 
 ## Run / Test
 ```bash
-mvn clean install
-mvn spring-boot:run
+./mvnw clean install     # build
+./mvnw spring-boot:run   # start the API on :8081
+./mvnw test              # unit tests (JUnit + Mockito)
 ```
 
 ## Configuration / Env Vars
 - Config file: `src/main/resources/application.properties`
 - Optional env file: `backend/.env` (loaded when running from `backend` folder)
-- Env vars list: `docs/runbook/env-vars.md`
+- Env vars: see the setup tables in the root [README](../README.md#setup); template in `backend/.env.example`

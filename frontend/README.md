@@ -13,9 +13,10 @@ Provides the public landing/registration flow, login, and authenticated dashboar
 ## Run / Test
 ```bash
 npm install
-npm run dev
+npm run dev   # start the UI on :3000
+npm test      # component/util tests (Vitest)
 ```
 
 ## Configuration / Env Vars
-- Frontend env file: `frontend/.env.local`
-- Env vars list: `docs/runbook/env-vars.md`
+- Frontend env file: `frontend/.env.local` (copy from `frontend/.env.example`)
+- Env vars: see the setup tables in the root [README](../README.md#setup)
