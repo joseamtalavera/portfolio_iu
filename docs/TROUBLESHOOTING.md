@@ -14,7 +14,7 @@
    lsof -i :5432  # macOS/Linux
    netstat -ano | findstr :5432  # Windows
    ```
-3. Verify database credentials in `application.properties` match your PostgreSQL setup
+3. Verify database credentials in `backend/.env` (`DB_USERNAME`, `DB_PASSWORD`) match your PostgreSQL setup
 4. Try restarting PostgreSQL:
    ```bash
    brew services restart postgresql@14  # macOS
@@ -45,7 +45,7 @@
    ```
    Authorization: Bearer <token>
    ```
-3. **Invalid token**: If you modified the JWT secret in `application.properties`, all existing tokens become invalid. Login again.
+3. **Invalid token**: If you changed `JWT_SECRET` in `backend/.env`, all existing tokens become invalid. Login again.
 4. **Token not stored**: Check browser's localStorage:
    - Open DevTools → Application → Local Storage → `http://localhost:3000`
    - Look for key `jwt` - it should contain the token
@@ -97,7 +97,7 @@ npm run dev -- -p 3001
 
 ## Maven Build Issues
 
-**Error**: `mvn clean install` fails
+**Error**: `./mvnw clean install` fails
 
 **Solutions**:
 1. **Network issues**: Maven needs internet to download dependencies. Check your connection.
@@ -108,8 +108,8 @@ npm run dev -- -p 3001
 3. **Maven settings**: If behind a corporate proxy, configure Maven settings.xml
 4. **Clean and retry**:
    ```bash
-   mvn clean
-   mvn install -U  # -U forces update of dependencies
+   ./mvnw clean
+   ./mvnw install -U  # -U forces update of dependencies
    ```
 
 ---

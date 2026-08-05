@@ -132,10 +132,18 @@ New accounts can also be registered from the UI.
 
 ## Tests
 
+**26 automated tests, all passing** — backend (JUnit + Mockito) and frontend (Vitest).
+
 ```bash
-cd backend
-./mvnw test
+# Backend — service-layer unit tests (booking rules, auth, ownership)
+cd backend && ./mvnw test
+
+# Frontend — component & auth-utility tests
+cd frontend && npm test
 ```
+
+Headline coverage: double-booking rejected (409), invalid time range rejected (400),
+delete scoped to the owner (403). Full matrix in [`docs/TEST_PLAN.md`](docs/TEST_PLAN.md).
 
 ---
 
@@ -143,15 +151,13 @@ cd backend
 
 | Document | Contents |
 |----------|----------|
-| [`docs/SETUP.md`](docs/SETUP.md) | Detailed environment setup |
 | [`docs/API.md`](docs/API.md) | REST endpoints |
 | [`docs/architecture/overview.md`](docs/architecture/overview.md) | System architecture |
-| [`docs/TEST_PLAN.md`](docs/TEST_PLAN.md) | Test strategy, coverage matrix and acceptance cases |
-| [`docs/TEST_CASES.csv`](docs/TEST_CASES.csv) | The acceptance cases as a spreadsheet |
+| [`docs/TEST_PLAN.md`](docs/TEST_PLAN.md) | Test strategy and coverage matrix |
 | [`docs/MANUAL_WALKTHROUGH.md`](docs/MANUAL_WALKTHROUGH.md) | Step-by-step tour of the running app |
+| [`docs/STRUCTURE.md`](docs/STRUCTURE.md) | Detailed repository layout |
 | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) | Common problems |
-| [`docs/REGISTRATION_FLOW.md`](docs/REGISTRATION_FLOW.md) · [`LOGIN_FLOW.md`](docs/LOGIN_FLOW.md) · [`DASHBOARD_FLOW.md`](docs/DASHBOARD_FLOW.md) · [`STRIPE_PAYMENT_FLOW.md`](docs/STRIPE_PAYMENT_FLOW.md) | Feature walkthroughs |
-| [`docs/runbook/README.md`](docs/runbook/README.md) | Operational runbooks |
+| [`notes/`](notes/) | Sequence/flow diagrams (Mermaid + SVG) for every feature |
 
 ---
 
