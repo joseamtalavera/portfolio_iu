@@ -165,6 +165,38 @@ npm run dev -- -p 3001
 
 ---
 
+## Stripe: Subscription Stays INACTIVE After Paying
+
+**Note:** Stripe is optional and only needed for a *brand-new* self-registered user who wants
+to subscribe. The seeded `tutor@be-working.com` account is already active, so reviewing the app
+(authentication + booking) needs none of this.
+
+**Cause**: Supplying the `STRIPE_*` keys is not enough on its own. Stripe confirms a payment by
+calling your backend on a **webhook**, and that is what flips a user's `subscriptionStatus` to
+`ACTIVE`. Locally, Stripe cannot reach `localhost` unless you forward its events — so without
+the steps below, checkout succeeds but the account never activates (bookings stay behind the
+paywall).
+
+**Setup (Stripe test mode)** — three processes must run: the backend, the frontend, and `stripe listen`.
+
+1. **Install the Stripe CLI** and log in:
+   ```bash
+   stripe login
+   ```
+2. **Forward webhook events** to the backend — keep this running in its own terminal:
+   ```bash
+   stripe listen --forward-to localhost:8081/api/subscription/webhook
+   ```
+   On start it prints a signing secret, `whsec_…`.
+3. **Match the secret.** Copy that `whsec_…` into `STRIPE_WEBHOOK_SECRET` in `backend/.env`,
+   then **restart the backend** — the value is read at startup. If it doesn't match, the webhook
+   is rejected with `400` and nothing activates.
+4. **Pay in test mode.** Subscribe from the app and use card `4242 4242 4242 4242`, any future
+   expiry, any CVC. The `stripe listen` terminal should show `checkout.session.completed → 200`,
+   and the account becomes `ACTIVE`.
+
+---
+
 ## Support
 
 If you encounter issues not covered in this doc:

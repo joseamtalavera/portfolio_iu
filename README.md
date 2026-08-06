@@ -67,46 +67,18 @@ Then edit `backend/.env`:
 `JWT_SECRET` has **no default**: the application refuses to start without it rather than fall
 back to a predictable signing key.
 
-> ### No Stripe account? You do not need one.
+> ### Subscription (Stripe) — optional, not needed to review the app
 >
-> **The three Stripe variables are optional.** Leave them blank and the application runs
-> normally — registration, login, mailbox and bookings all work. Only the subscription checkout
-> is unavailable.
+> The seeded `tutor@be-working.com` account is already **active**, so **authentication and
+> booking — the two dynamic features — work immediately** after login. Booking is free for any
+> registered, paid user.
 >
-> The payment flow is demonstrated end to end in the project screencast: Stripe Checkout in test
-> mode, the webhook firing, and the user's subscription status changing to `ACTIVE`.
+> Stripe only matters if a *brand-new* user self-registers and wants to subscribe. The three
+> `STRIPE_*` variables are optional: leave them blank and everything except the subscription
+> checkout works. No Stripe credentials are committed to this repository, by design.
 >
-> No Stripe credentials are committed to this repository, by design. A Stripe secret key is an
-> API credential even in test mode, and secrets do not belong in source control. To run the flow
-> yourself, create a free Stripe account, switch to **test mode**, and supply your own keys.
-> Test mode moves no real money — use card `4242 4242 4242 4242` with any future expiry and CVC.
-
-#### Enabling the full subscription flow (Stripe test mode)
-
-Supplying the keys above is **not enough** on its own. Stripe confirms a payment by
-calling your backend on a **webhook**, and that is what flips a user's
-`subscriptionStatus` to `ACTIVE`. Locally, Stripe cannot reach `localhost` unless you
-forward its events — so **without the step below, checkout succeeds but the account
-never activates** (bookings stay behind the paywall).
-
-1. **Install the Stripe CLI** and log in:
-   ```bash
-   stripe login
-   ```
-2. **Forward webhook events** to the backend — keep this running in its own terminal:
-   ```bash
-   stripe listen --forward-to localhost:8081/api/subscription/webhook
-   ```
-   On start it prints a signing secret, `whsec_…`.
-3. **Match the secret.** Copy that `whsec_…` into `STRIPE_WEBHOOK_SECRET` in
-   `backend/.env`, then **restart the backend** — the value is read at startup. If it
-   doesn't match, the webhook is rejected with `400` and nothing activates.
-4. **Pay in test mode.** Subscribe from the app and use card
-   `4242 4242 4242 4242`, any future expiry, any CVC. The `stripe listen` terminal
-   should show `checkout.session.completed → 200`, and the account becomes `ACTIVE`.
-
-You need three processes running for this: the backend, the frontend, and
-`stripe listen`.
+> Full test-mode setup (Stripe CLI + webhook forwarding) is documented in
+> [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md).
 
 ### 3. Configure the frontend
 
