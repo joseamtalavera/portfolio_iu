@@ -13,8 +13,8 @@ All API endpoints are prefixed with `/api`. Base URL: `http://localhost:8081/api
 **Request Body:**
 ```json
 {
-  "name": "John Doe",
-  "email": "john@example.com",
+  "name": "Jose Molina",
+  "email": "jose@example.com",
   "password": "password123"
 }
 ```
@@ -35,8 +35,8 @@ user logs in as a separate step to obtain a JWT.
 curl -X POST http://localhost:8081/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "John Doe",
-    "email": "john@example.com",
+    "name": "Jose Molina",
+    "email": "jose@example.com",
     "password": "password123"
   }'
 ```
@@ -52,7 +52,7 @@ curl -X POST http://localhost:8081/api/auth/register \
 **Request Body:**
 ```json
 {
-  "email": "john@example.com",
+  "email": "jose@example.com",
   "password": "password123"
 }
 ```
@@ -63,8 +63,8 @@ curl -X POST http://localhost:8081/api/auth/register \
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "user": {
     "id": 1,
-    "name": "John Doe",
-    "email": "john@example.com",
+    "name": "Jose Molina",
+    "email": "jose@example.com",
     "phone": null,
     "company": null,
     "billingAddress": null,
@@ -81,7 +81,7 @@ curl -X POST http://localhost:8081/api/auth/register \
 curl -X POST http://localhost:8081/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "john@example.com",
+    "email": "jose@example.com",
     "password": "password123"
   }'
 ```
@@ -108,8 +108,8 @@ Authorization: Bearer <your-token-here>
 ```json
 {
   "id": 1,
-  "name": "John Doe",
-  "email": "john@example.com",
+  "name": "Jose Molina",
+  "email": "jose@example.com",
   "phone": null,
   "company": null,
   "billingAddress": null,
@@ -268,7 +268,7 @@ curl -X DELETE http://localhost:8081/api/bookings/1 \
 **Request Body:**
 ```json
 {
-  "name": "John Updated",
+  "name": "Jose Updated",
   "phone": "+34 612 345 678",
   "company": "My Company",
   "billingAddress": "123 Main St",
@@ -282,8 +282,8 @@ curl -X DELETE http://localhost:8081/api/bookings/1 \
 ```json
 {
   "id": 1,
-  "name": "John Updated",
-  "email": "john@example.com",
+  "name": "Jose Updated",
+  "email": "jose@example.com",
   "phone": "+34 612 345 678",
   "company": "My Company",
   "billingAddress": "123 Main St",
@@ -300,7 +300,7 @@ curl -X PUT http://localhost:8081/api/user/profile \
   -H "Authorization: Bearer YOUR_TOKEN_HERE" \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "John Updated",
+    "name": "Jose Updated",
     "phone": "+34 612 345 678",
     "company": "My Company"
   }'
