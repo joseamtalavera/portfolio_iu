@@ -1,106 +1,101 @@
 # Manual Walkthrough — exercising the running app
 
-## Step-by-Step Test Script
+This is a by-hand test script for the running app (frontend **http://localhost:3000**,
+backend **:8081**). It exercises the two dynamic features — **authentication** and
+**booking** — plus mailbox, profile, and responsive design.
 
-### 1. Register a New User
+**About the two accounts.** The seeded tutor account (`tutor@be-working.com` / `tutor1234`)
+is already **active**, so it can reach every page. A brand-new user you register is
+**inactive**, so the app's subscription paywall intercepts Mailbox and Bookings for that user
+(expected behaviour). Use the new user to demonstrate registration/login, and the **tutor**
+account for the feature pages.
 
-1. Open **http://localhost:3000** in your browser
-2. Fill in the registration form:
-   - **Name**: `Test User`
-   - **Email**: `test@example.com`
+---
+
+## Part A — Authentication (dynamic feature 1)
+
+### 1. Register a new user
+
+1. Open **http://localhost:3000**.
+2. In the registration form on the landing page, enter:
+   - **Full Name**: `Test User`
+   - **Email Address**: `test@example.com`
    - **Password**: `test1234`
-3. Click **"Register"** button
-4. You should be redirected to the login page
+3. Click **Register**.
+4. A *"Registration successful! Redirecting to login…"* message appears and you are sent to
+   the login page.
 
-### 2. Login
+### 2. Log in
 
-1. On the login page, enter:
-   - **Email**: `test@example.com`
-   - **Password**: `test1234`
-2. Click **"Login"** button
-3. You should be redirected to the **Dashboard**
+1. On the login page, enter `test@example.com` / `test1234`.
+2. Click **Login** → you land on the **Overview** (dashboard).
 
-### 3. Explore the Dashboard
+### 3. Dashboard overview
 
-1. **Dashboard** should display:
-   - User stats (name, email, subscription status)
-   - Total bookings count
-   - Total mailbox items count
-   - Subscription status chip (should show **INACTIVE** in orange)
-2. Check the navigation sidebar on the left:
-   - Dashboard
-   - Bookings
-   - Mailbox
-   - Profile
+1. The dashboard shows your name/email, a bookings count, a mailbox count, and a
+   **subscription-status chip** — **INACTIVE** (orange) for this new user.
+2. The sidebar contains: **Overview**, **Mailbox**, **Bookings**, **Profile**, **Log out**.
+3. As an inactive user, clicking **Mailbox** or **Bookings** opens the **subscription paywall
+   modal** instead of the page — this is the intended gate. To exercise those features, use the
+   active tutor account in Part B.
 
-### 4. Test Mailbox
+### 4. Log out
 
-1. Click **Mailbox** in the sidebar
-2. You should see a list of mailbox items (default tutor user has 5 items)
-3. Each item shows:
-   - Subject
-   - Message preview
-   - Timestamp
-   - PDF download link
-4. Click a PDF link to verify it opens/downloads
+1. Click **Log out** in the sidebar (left menu).
+2. You are returned to the login page. Visiting **http://localhost:3000/dashboard** directly
+   redirects to login.
 
-### 5. Create a Booking
+---
 
-1. Click **Bookings** in the sidebar
-2. You should see a calendar view and a form to create bookings
-3. Fill in the booking form:
-   - **Product**: Meeting Room A
-   - **Date**: select a future date (use the date picker)
-   - **Start Hour**: 10:00
-   - **End Hour**: 11:30
-   - **Attendees**: 5
-4. Click **"Create Booking"** button
-5. The booking should appear in the list below the form
+## Part B — Feature tour with the active tutor account
 
-### 6. View Bookings List
+### 5. Log in as the tutor
 
-1. Scroll down on the Bookings page
-2. You should see all your bookings listed
-3. Each booking shows:
-   - Product name
-   - Date
-   - Time range
-   - Number of attendees
-4. Try deleting a booking by clicking the delete (trash) icon
-
-### 7. Update Profile
-
-1. Click **Profile** in the sidebar (or click your name/avatar in the top right)
-2. A profile modal should open
-3. Update fields:
-   - **Name**: Updated Name
-   - **Phone**: +34 612 345 678
-   - **Company**: My Company
-4. Click **"Save"** button
-5. The changes should be reflected in the dashboard
-
-### 8. Test Responsive Design
-
-1. Open browser Developer Tools (F12 or Cmd+Option+I)
-2. Click the Device Toolbar icon (or press Cmd+Shift+M / Ctrl+Shift+M)
-3. Select a mobile device (e.g., iPhone 12)
-4. Verify:
-   - Navigation sidebar collapses to a hamburger menu
-   - Forms stack vertically
-   - Text sizes adjust
-   - Buttons remain clickable
-
-### 9. Test Logout
-
-1. Click your name/avatar in the top right
-2. Click **"Logout"** button
-3. You should be redirected to the login page
-4. Try accessing http://localhost:3000/dashboard directly — you should be redirected to login
-
-### 10. Test with Default Tutor User
-
-Login with:
-- **Email**: `tutor@be-working.com`
+Log in with:
+- **Email Address**: `tutor@be-working.com`
 - **Password**: `tutor1234`
 
-This user already has 5 mailbox items pre-loaded. Verify the mailbox shows all 5 items.
+This account is **active**, so all pages are reachable (no paywall).
+
+### 6. Mailbox
+
+1. Click **Mailbox** in the sidebar.
+2. You should see **5** pre-loaded messages. Each shows a subject, a message preview, a
+   timestamp, and a PDF link.
+3. Click a PDF link to verify it opens.
+
+### 7. Create a booking (dynamic feature 2)
+
+1. Click **Bookings** in the sidebar. The page opens on the **"calendar"** tab, which holds the
+   booking form.
+2. Fill in the form:
+   - **Product**: `Meeting Room`
+   - **Date**: a future date (use the date picker)
+   - **Start Hour**: `10:00`
+   - **End Hour**: `11:30`
+   - **Attendees**: `5`
+3. Click **Create Booking**. The booking is saved and the list refreshes.
+   *(Booking the same room for an overlapping time is rejected — the backend returns `409`.)*
+
+### 8. View / delete bookings
+
+1. On the Bookings page, switch to the **"bookings"** tab to see your bookings list.
+2. Each row shows the product, date, time range, and number of attendees.
+3. Click the trash icon to delete a booking. *(You can only delete your own — the backend
+   returns `403` otherwise.)*
+
+### 9. Update profile
+
+1. Click **Profile** in the sidebar, or click your **avatar** (top right) — both open the
+   profile modal.
+2. Update your **Name**, **Phone**, and **Company** (Email is shown but not editable).
+3. Click **Save**. The changes are reflected on the dashboard.
+
+### 10. Responsive design
+
+1. Open browser DevTools (F12 or Cmd+Option+I) and toggle the device toolbar
+   (Cmd+Shift+M / Ctrl+Shift+M).
+2. Select a mobile device (e.g., iPhone 12) and verify:
+   - The sidebar collapses to a hamburger menu
+   - Forms stack vertically
+   - Content stays readable and buttons remain tappable
