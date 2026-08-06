@@ -11,8 +11,7 @@ portfolio_iu/
 │   │   │   │   ├── entities/       # JPA entities (User, Booking, MailboxItem)
 │   │   │   │   ├── repositories/   # Data access layer
 │   │   │   │   ├── dto/            # Data Transfer Objects
-│   │   │   │   ├── security/       # JWT authentication & Spring Security config
-│   │   │   │   └── config/         # Application configuration
+│   │   │   │   └── security/       # JWT authentication & Spring Security config
 │   │   │   └── resources/
 │   │   │       ├── application.properties  # Backend configuration
 │   │   │       ├── data.sql                # Initial data (tutor user + mailbox items)
