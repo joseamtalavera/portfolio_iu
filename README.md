@@ -25,7 +25,7 @@ the system locally.
 | Tool | Version | Check with |
 |------|---------|------------|
 | Java (JDK) | 17 or newer | `java -version` |
-| Node.js | 18 or newer | `node -v` |
+| Node.js | 20 or newer (Next.js 16 requirement) | `node -v` |
 | PostgreSQL | 14 or newer, running on port 5432 | `pg_isready` |
 
 Maven is **not** required — the repository includes the Maven wrapper (`./mvnw`).
