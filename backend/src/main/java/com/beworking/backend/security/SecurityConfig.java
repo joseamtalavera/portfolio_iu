@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.List;
 
@@ -64,10 +65,15 @@ public class SecurityConfig {
                 // Default-deny: every request needs authentication except the explicit public allowlist below.
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/auth/register", "/auth/login").permitAll() // no token exists before login
+                        .requestMatchers("/error").permitAll() // let Spring render the real error status/body; otherwise the ERROR dispatch is blocked and every error becomes 403
                         .requestMatchers("/api/subscription/webhook").permitAll() // Stripe callback has no JWT; verified by signature instead
                         .requestMatchers("/pdfs/**").permitAll() // static mailbox PDFs
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(ex ->ex.authenticationEntryPoint(
+                    (request, response, authException) -> 
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED)  // 401, not the default 403, for missing/invalid auth
+                ))
                 // Provider that verifies email + password at login (DB lookup + BCrypt).
                 .authenticationProvider(authenticationProvider())
                 // Run the JWT filter before the password-login filter so token auth is applied first on every request.
