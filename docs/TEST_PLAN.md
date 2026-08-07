@@ -1,7 +1,7 @@
 # Test Plan — BeWorking
 
-This document states **what is tested, at which level, and why**. It is written before the
-tests so that coverage is a decision rather than an accident.
+This document lists **what I test, at which level, and why**. I wrote it before writing the
+tests, so I decided what to cover on purpose instead of testing things at random.
 
 For the step-by-step manual walkthrough of the running application, see
 [`MANUAL_WALKTHROUGH.md`](./MANUAL_WALKTHROUGH.md).
@@ -10,7 +10,7 @@ For the step-by-step manual walkthrough of the running application, see
 
 ## 1. What we test, and what we deliberately do not
 
-The rule applied throughout: **test what would be a bug if it broke.**
+The rule I follow: **test the things that would be a bug if they broke.**
 
 In practice that means business rules and security boundaries. It explicitly excludes:
 
@@ -18,11 +18,11 @@ In practice that means business rules and security boundaries. It explicitly exc
 |---|---|
 | Getters, setters, Lombok builders | Generated code; a failure here is a compiler failure |
 | Spring wiring, JPA query execution | Framework code, already tested by its authors |
-| Third-party libraries (BCrypt, JJWT, Stripe SDK) | Trusting them is the reason for using them |
-| Layout and styling | No assertion exists that would not break on every design change |
+| Third-party libraries (BCrypt, JJWT, Stripe SDK) | We use them because they are already well tested |
+| Layout and styling | Any assertion here would break on every design change |
 
-Writing tests for those inflates a coverage number without protecting anything. Leaving them
-out is the decision; this table is the justification.
+Testing those would raise the coverage number without catching any real bug, so I leave them
+out on purpose. This table is why.
 
 ### Convention for every test
 
@@ -34,8 +34,8 @@ Fixed, applied without exception:
 void createRejectsEndBeforeStart() {   // TEST_PLAN B1
 ```
 
-- **`@DisplayName`** states the rule in plain English, in the code itself. A reader learns what
-  is protected without reading the assertions.
+- **`@DisplayName`** says what the test checks in plain English, right in the code, so you can
+  see it without reading the assertions.
 - **The `TEST_PLAN` id in a trailing comment** ties the test to its row in the tables below, so
   the plan and the suite cannot drift apart.
 - **Method names describe behaviour, not mechanics** — `createRejectsEndBeforeStart`, never
@@ -52,18 +52,21 @@ void createRejectsEndBeforeStart() {   // TEST_PLAN B1
 | Level | Tool | What it proves | Speed |
 |---|---|---|---|
 | **Unit** | JUnit 5 + Mockito | A business rule behaves correctly in isolation. Repository mocked, no database. | ms |
-| **Slice** | `@WebMvcTest` + MockMvc | HTTP contract: status codes, `@Valid` rejections, endpoints require a token. | ~1s |
+| **Slice** *(deferred — see §3.3)* | `@WebMvcTest` + MockMvc | HTTP contract: status codes, `@Valid` rejections, endpoints require a token. | ~1s |
 | **Integration** | `@SpringBootTest` | The parts are wired together and the app starts. | slow |
 
-Most value sits at the **unit** level, because that is where the rules live. Slice tests would
-cover status codes and validation — part of the API contract and not visible to a unit test — but
-are **deferred** (see §3.3). Only one integration test is needed — proving the context loads.
+Most of the tests are **unit** tests, because that is where the business rules are. Slice tests
+would check status codes and validation (the HTTP side, which a unit test does not see), but I
+**deferred** them (see §3.3). Only one integration test is needed, to check the app starts.
 
 ---
 
 ## 3. Backend automated coverage
 
 ### 3.1 Booking rules — `BookingServiceTest` (unit)
+
+All eight live in `backend/src/test/java/com/beworking/backend/services/BookingServiceTest.java`,
+each tagged with its `// TEST_PLAN B#`.
 
 | # | Test | Rule protected | Expected |
 |---|---|---|---|
@@ -76,11 +79,11 @@ are **deferred** (see §3.3). Only one integration test is needed — proving th
 | B7 | `deleteRemovesOwnBooking` | The happy path still works | `delete` called with that booking |
 | B8 | `deleteScopesLookupByCallerId` | Ownership travels in the `WHERE` clause | Repository queried with both ids |
 
-Why B1 and B2 are separate: `isAfter` and `isBefore` differ only when the two values are equal,
-so an off-by-one in the comparison passes B1 and fails B2. That boundary is the whole point.
+Why B1 and B2 are separate: `isAfter` and `isBefore` only differ when start and end are equal,
+so a wrong comparison could pass B1 but fail B2. That equal case is exactly what B2 checks.
 
-Why B5 and B8 exist at all: they assert a **security property**, not an output. They fail if a
-future refactor starts trusting a client-supplied user id.
+Why B5 and B8 exist: they check a **security rule**, not a return value. They fail if someone
+later changes the code to trust a user id sent by the client.
 
 ### 3.2 Authentication rules — `AuthServiceTest` (unit)
 
@@ -95,13 +98,13 @@ each tagged with its `// TEST_PLAN A#`.
 | A4 | `loginRejectsWrongPasswordWithSameMessageAsUnknownEmail` | No user enumeration | Identical `401` and identical message in both cases |
 | A5 | `loginResponseNeverCarriesThePasswordField` | The DTO boundary holds | `UserResponse` has no password component |
 
-A4 is the highest-value test in the suite: it protects a property that is invisible in normal
-use and would be silently destroyed by a well-meaning "clearer error messages" change.
+A4 is the most important auth test: the behaviour it checks is invisible in normal use, so
+someone could break it by "making the error messages clearer" without noticing.
 
 ### 3.3 HTTP contract — `BookingControllerTest` (`@WebMvcTest`) — *deferred*
 
 Planned file: `backend/src/test/java/com/beworking/backend/controllers/BookingControllerTest.java`
-(not yet written — see the deferral note below).
+(not yet written).
 
 | # | Test | Rule protected | Expected |
 |---|---|---|---|
@@ -112,9 +115,18 @@ Planned file: `backend/src/test/java/com/beworking/backend/controllers/BookingCo
 | C5 | `createReturns201WithLocationOfNewBooking` | Correct success status | `201`, body carries the id |
 | C6 | `deleteReturns204` | Correct success status | `204`, empty body |
 
-C1 is the one that matters most: it proves the *whole* security chain, not one class.
+C1 matters most: it checks the whole security chain, not just one class.
+
+**Why these are deferred.** At this size I put the automated effort into unit tests, which is where
+the business rules are. The HTTP checks above (401 without a token, the `@Valid` 400s, past-date
+and zero-attendee rejections) are all exercised by the manual cases (M03, M08, M13, M14), so nothing
+here is untested — it is just checked by hand rather than by `@WebMvcTest`. Turning these C-cases into
+real slice tests is the obvious next step if the suite grows.
 
 ### 3.4 Context — `BackendApplicationTests` (integration) — *exists*
+
+It lives in `backend/src/test/java/com/beworking/backend/BackendApplicationTests.java` — the
+default Spring Boot smoke test, so it has no `// TEST_PLAN` tag of its own.
 
 | # | Test | Proves |
 |---|---|---|
@@ -126,10 +138,9 @@ C1 is the one that matters most: it proves the *whole* security chain, not one c
 
 The application has four features. The two the brief requires as **dynamic** — authentication and
 booking — are covered by **automated component tests**; mailbox is covered by a **manual acceptance
-case** (M19) in section 5, and payment is **verified manually in Stripe test mode** (see
-[`TROUBLESHOOTING.md`](./TROUBLESHOOTING.md)). This mirrors where the marks and the risk actually
-sit: the automated tests exercise the two dynamic flows, and payment is deliberately manual because
-Stripe is an external service tested against its sandbox rather than automated.
+case** (M19) in section 5, and payment is **checked by hand in Stripe test mode** (see §4.4). I put
+the automated tests on the two dynamic features, since those are the ones being assessed; payment
+works but is a separate feature, so I test it by hand instead.
 
 Tooling: **Vitest + React Testing Library** (the runner Next.js documents for React 19). A component
 test renders a single component in a jsdom DOM, simulates a user action, and asserts what the user
@@ -138,8 +149,8 @@ would see — no real browser and no real backend.
 ### 4.1 Auth component tests — landing/register page and login page
 
 The register form is part of the landing page (`app/page.tsx`); login is its own page
-(`app/login/page.tsx`). Each test carries a `// TEST_PLAN F#` tag, so the row and the code
-can be found from either direction.
+(`app/login/page.tsx`). F1–F2 live in `frontend/src/app/page.test.tsx` and F3–F4 in
+`frontend/src/app/login/page.test.tsx`, each tagged with its `// TEST_PLAN F#`.
 
 | # | Test | Rule protected | Where |
 |---|---|---|---|
@@ -152,7 +163,8 @@ can be found from either direction.
 
 The booking form lives on the bookings page (`app/bookings/page.tsx`). Two client behaviours are
 covered here: F5 asserts the End Hour dropdown only offers slots later than the chosen Start Hour,
-and F6 asserts the client blocks an overlapping slot before any request is sent.
+and F6 asserts the client blocks an overlapping slot before any request is sent. Both live in
+`frontend/src/app/bookings/page.test.tsx`, each tagged with its `// TEST_PLAN F#`.
 
 | # | Test | Rule protected | Where |
 |---|---|---|---|
@@ -164,22 +176,30 @@ end ≤ start *was* selectable — the resulting `400` came back as a generic "F
 booking" alert, with the rule living only on the **backend** (B1, B2). F5 was retired then as
 having no client behaviour to assert. The form was later changed: the End Hour dropdown is
 filtered to slots strictly after the chosen Start (`endTimeOptions`), and a now-invalid end is
-cleared when Start moves past it. That makes the rule an observable client behaviour, so F5 is
-reinstated to assert it. The backend (B1, B2) remains the safety net.
+cleared when Start moves past it. Now the rule is real behaviour in the UI, so I brought F5 back
+to check it. The backend (B1, B2) is still the safety net.
 
-**What F6 really tests.** The original F6 assumed a `409` from the API renders "already booked". In
-fact the dialog is produced by a *local* overlap check (`checkForConflict`) that runs **before** any
-request; a real `409` would surface as a generic alert. So F6 now drives the true path: it seeds one
-existing booking (10:30–11:30 via a mocked `fetch`), fills the form with an overlapping 10:00–11:30,
-clicks Create, and asserts the conflict dialog appears. Server-side overlap is separately covered by
-**B3** and the manual cases (M10, M11).
+**What F6 tests.** F6 checks the client's own double-booking block. When you pick a slot that
+clashes with a booking already on screen, the app opens the "Time Slot Already Booked" dialog right
+away: a local check (`checkForConflict`) runs first, so no request is even sent to the server.
+
+The test sets this up directly — it loads one existing booking (10:30–11:30, via a mocked `fetch`),
+fills the form with an overlapping 10:00–11:30, clicks Create, and checks the dialog appears.
+
+One clarification, because it is easy to get wrong: the dialog does **not** come from the server's
+`409`. The client blocks the clash first, so the server is usually never called. A `409` only
+happens if that client check is bypassed, and then it shows as a plain error message, not this
+dialog.
+
+The same client behaviour is also checked by hand in M10 (blocks an overlap) and M11 (allows a
+touching edge). The server's own overlap rule is covered by **B3**.
 
 ### 4.3 Validation unit tests — the shared validators (`auth.test.ts`)
 
-Beneath the component tests sit the pure functions they depend on: `validateRegister` and
-`validateLogin`. These are tested in isolation — no DOM, no render — because a validator is a
-plain function whose every branch can be pinned with one input. F1–F4 prove the form *wires* the
-validator to the screen; V1–V7 prove the validator itself is correct. All seven live in
+Under the component tests are the plain functions they use: `validateRegister` and
+`validateLogin`. I test these on their own — no DOM, no render — because a validator is a plain
+function and each branch can be checked with one input. F1–F4 check that the form *wires* the
+validator to the screen; V1–V7 check the validator itself. All seven live in
 `frontend/src/utils/auth.test.ts`, each tagged with its `// TEST_PLAN V#`.
 
 | # | Test | Rule protected | Expected |
@@ -192,14 +212,20 @@ validator to the screen; V1–V7 prove the validator itself is correct. All seve
 | V6 | `validateLogin` rejects an empty password | Password is required | `"Password is required"` |
 | V7 | `validateLogin` accepts valid input | The happy path returns no error | `null` |
 
-### 4.4 Deliberately manual — mailbox and payment
+### 4.4 Checked by hand — mailbox and payment
 
-Mailbox is exercised through manual case M19; payment is verified manually in Stripe test mode
-(setup in [`TROUBLESHOOTING.md`](./TROUBLESHOOTING.md)). Automating payment is intentionally out of
-scope: faking the full Stripe lifecycle, including webhooks, is brittle and low-value at this size.
+I test mailbox by hand in case M19.
 
-Also deliberately excluded everywhere: snapshot tests of rendered markup. They break on every styling
-change and assert nothing about behaviour.
+Payment is a working feature, but it is **not** one of the two dynamic features I was asked to build
+(those are login and booking), so I did not write automated tests for it. It is also not needed to
+review those two features: the tutor account is already active, so it can book and open the mailbox
+without paying.
+
+Payment only comes in if you register a brand-new user. A new user starts **inactive**, so before
+they can book or open the mailbox they have to pay. To try that path you first add your own Stripe
+test keys to the backend (see [`TROUBLESHOOTING.md`](./TROUBLESHOOTING.md) and the README), then pay
+with Stripe's test card. That is why I check payment by hand in Stripe test mode instead of
+automating it.
 
 ---
 
@@ -210,7 +236,7 @@ The table below is the "click this, expect that" set.
 | ID | Area | Precondition | Action | Expected result |
 |---|---|---|---|---|
 | M01 | Register | No account for `test@example.com` | Submit the register form with valid details | Account created, redirected to login, **no** token issued |
-| M02 | Register | `test@example.com` already exists | Submit the same email again | Error "email already registered"; no second account |
+| M02 | Register | `test@example.com` already exists | Submit the same email again | Error "Email already exists"; no second account |
 | M03 | Register | — | Submit a password shorter than 6 characters | Field-level error; the form does not submit |
 | M04 | Login | Account exists | Submit correct email and password | Redirected to the dashboard; token stored client-side |
 | M05 | Login | Account exists | Submit the correct email with a wrong password | "Invalid credentials" |
@@ -218,9 +244,9 @@ The table below is the "click this, expect that" set.
 | M07 | Access control | Logged out | Open `/dashboard` directly by URL | Redirected to login, no data shown |
 | M08 | Access control | Logged in | Call `GET /api/bookings` with the `Authorization` header removed | `401 Unauthorized` |
 | M09 | Booking | Logged in | Create a booking for tomorrow, 09:00–11:00 | Booking appears in the list; `201` returned |
-| M10 | Booking | M09 done | Create the same room, same date, 10:00–12:00 | Rejected, `409`, message "already booked" |
+| M10 | Booking | M09 done | Create the same room, same date, 10:00–12:00 | The "Time Slot Already Booked" dialog appears (client's local check); no request is sent, no booking created |
 | M11 | Booking | M09 done | Create the same room, same date, 11:00–12:00 | **Accepted** — touching edges do not overlap |
-| M12 | Booking | Logged in | Create a booking with end 09:00 and start 17:00 | Rejected, `400`, "end hour must be after start hour" |
+| M12 | Booking | Logged in | Pick Start 17:00, then open the End Hour dropdown | The dropdown offers no slot ≤ 17:00, so end-before-start cannot be chosen in the UI. Called directly (bypassing the form), the API still rejects it with `400` |
 | M13 | Booking | Logged in | Create a booking dated yesterday | Rejected by `@FutureOrPresent` |
 | M14 | Booking | Logged in | Create a booking with 0 attendees | Rejected by `@Min(1)` |
 | M15 | Booking | Two accounts, each with a booking | As user A, list bookings | Only A's bookings are returned |
@@ -232,12 +258,13 @@ The table below is the "click this, expect that" set.
 | M21 | Session | Logged in | Wait past token expiry, then act | Redirected to login rather than a silent failure |
 | M22 | Token | Logged in | Alter one character of the stored token, then reload | `401`; the forged token is rejected |
 
-M11, M16 and M18 are the three worth demonstrating live. M11 proves the overlap boundary is
-correct rather than merely present; M16 and M18 together prove that a refusal reveals nothing.
+M11, M16 and M18 are the three worth showing live. M11 shows the overlap check is off-by-one
+correct, not just present; M16 and M18 together show a refusal does not reveal whether the
+booking exists.
 
 ---
 
-## 6. Known gaps, stated rather than hidden
+## 6. Known gaps
 
 | Gap | Why it is not covered | Correct fix |
 |---|---|---|
@@ -256,7 +283,7 @@ correct rather than merely present; M16 and M18 together prove that a refusal re
 | `BackendApplicationTests` | Complete — I1 (`contextLoads`) passing |
 | `BookingServiceTest` | Complete — B1–B8 written and passing |
 | `AuthServiceTest` | Complete — A1–A5 written and passing |
-| `BookingControllerTest` | Deferred — section 3.3. The rules these would cover are already proven by the unit tests and the manual cases; held back pending review feedback rather than duplicating coverage |
+| `BookingControllerTest` | Deferred — section 3.3. The HTTP checks these would automate are covered by the manual cases (M03, M08, M13, M14) for now; writing them as slice tests is the next step if the suite grows |
 | Frontend validators (`utils/auth.test.ts`) | Complete — V1–V7 written and passing (section 4.3) |
 | Frontend auth components (`app/page.test.tsx`, `app/login/page.test.tsx`) | Complete — F1–F4 written and passing |
 | Frontend booking component (`app/bookings/page.test.tsx`) | Complete — F5 and F6 written and passing (section 4.2) |
