@@ -131,7 +131,7 @@ New accounts can also be registered from the UI.
 
 ## Tests
 
-**26 automated tests, all passing** — backend (JUnit + Mockito) and frontend (Vitest).
+**27 automated tests, all passing** — backend (JUnit + Mockito) and frontend (Vitest).
 
 ```bash
 # Backend — service-layer unit tests (booking rules, auth, ownership)

@@ -55,9 +55,9 @@ void createRejectsEndBeforeStart() {   // TEST_PLAN B1
 | **Slice** | `@WebMvcTest` + MockMvc | HTTP contract: status codes, `@Valid` rejections, endpoints require a token. | ~1s |
 | **Integration** | `@SpringBootTest` | The parts are wired together and the app starts. | slow |
 
-Most value sits at the **unit** level, because that is where the rules live. Slice tests exist
-because status codes and validation are part of the API contract and are not visible to a unit
-test. Only one integration test is needed — proving the context loads.
+Most value sits at the **unit** level, because that is where the rules live. Slice tests would
+cover status codes and validation — part of the API contract and not visible to a unit test — but
+are **deferred** (see §3.3). Only one integration test is needed — proving the context loads.
 
 ---
 
@@ -71,7 +71,7 @@ test. Only one integration test is needed — proving the context loads.
 | B2 | `createRejectsEqualStartAndEnd` | A zero-length booking is not a booking | `400 Bad Request` |
 | B3 | `createRejectsOverlap` | No double booking (F25) | `409 Conflict`, nothing saved |
 | B4 | `createSavesWhenSlotIsFree` | The happy path still works | Response carries the new id |
-| B5 | `createAttachesCallerAsOwner` | Owner comes from the token, never the request body | Saved booking has the caller's id |
+| B5 | `createAttachesCallerOwner` | Owner comes from the token, never the request body | Saved booking has the caller's id |
 | B6 | `deleteRefusesBookingOwnedBySomeoneElse` | IDOR prevention | `403 Forbidden`, nothing deleted |
 | B7 | `deleteRemovesOwnBooking` | The happy path still works | `delete` called with that booking |
 | B8 | `deleteScopesLookupByCallerId` | Ownership travels in the `WHERE` clause | Repository queried with both ids |
@@ -125,10 +125,11 @@ C1 is the one that matters most: it proves the *whole* security chain, not one c
 ## 4. Frontend
 
 The application has four features. The two the brief requires as **dynamic** — authentication and
-booking — are covered by **automated component tests**; mailbox and payment are covered by the
-**manual acceptance cases** in section 5. This mirrors where the marks and the risk actually sit:
-the automated tests exercise the flows shown in the screencast, and payment is deliberately manual
-because Stripe is an external service tested against its sandbox rather than automated.
+booking — are covered by **automated component tests**; mailbox is covered by a **manual acceptance
+case** (M19) in section 5, and payment is **verified manually in Stripe test mode** (see
+[`TROUBLESHOOTING.md`](./TROUBLESHOOTING.md)). This mirrors where the marks and the risk actually
+sit: the automated tests exercise the two dynamic flows, and payment is deliberately manual because
+Stripe is an external service tested against its sandbox rather than automated.
 
 Tooling: **Vitest + React Testing Library** (the runner Next.js documents for React 19). A component
 test renders a single component in a jsdom DOM, simulates a user action, and asserts what the user
@@ -149,18 +150,22 @@ can be found from either direction.
 
 ### 4.2 Booking component test — bookings page
 
-The booking form lives on the bookings page (`app/bookings/page.tsx`). It was **planned** as two
-tests (F5, F6); after reading the implementation, F5 was retired and F6 was rewritten to match the
-code the page actually runs — testing behaviour that does not exist would be dishonest coverage.
+The booking form lives on the bookings page (`app/bookings/page.tsx`). Two client behaviours are
+covered here: F5 asserts the End Hour dropdown only offers slots later than the chosen Start Hour,
+and F6 asserts the client blocks an overlapping slot before any request is sent.
 
 | # | Test | Rule protected | Where |
 |---|---|---|---|
+| F5 | After a Start Hour is chosen, the End Hour dropdown lists only later slots — an end ≤ start cannot be selected | The client enforces end > start in the UI, not only on the backend | `frontend/src/app/bookings/page.test.tsx` |
 | F6 | Choosing a slot that overlaps an existing booking opens the "Time Slot Already Booked" dialog, before any request is sent | The client blocks a double booking and says so, without a wasted round trip | `frontend/src/app/bookings/page.test.tsx` |
 
-**Why F5 was retired.** F5 was to assert the client blocks an end ≤ start choice. There is no such
-client check: start and end are *dropdowns* filled only with valid, available half-hour slots, so
-an end-before-start choice is not selectable in the first place. That rule is enforced and tested
-on the **backend** (B1, B2).
+**Why F5 is now a client test.** Originally both dropdowns drew from the same slot list, so an
+end ≤ start *was* selectable — the resulting `400` came back as a generic "Failed to create
+booking" alert, with the rule living only on the **backend** (B1, B2). F5 was retired then as
+having no client behaviour to assert. The form was later changed: the End Hour dropdown is
+filtered to slots strictly after the chosen Start (`endTimeOptions`), and a now-invalid end is
+cleared when Start moves past it. That makes the rule an observable client behaviour, so F5 is
+reinstated to assert it. The backend (B1, B2) remains the safety net.
 
 **What F6 really tests.** The original F6 assumed a `409` from the API renders "already booked". In
 fact the dialog is produced by a *local* overlap check (`checkForConflict`) that runs **before** any
@@ -189,9 +194,9 @@ validator to the screen; V1–V7 prove the validator itself is correct. All seve
 
 ### 4.4 Deliberately manual — mailbox and payment
 
-Mailbox and payment are exercised through the manual cases (M19 for mailbox; the payment flow in the
-screencast against the Stripe sandbox). Automating payment is intentionally out of scope: faking the
-full Stripe lifecycle, including webhooks, is brittle and low-value at this size.
+Mailbox is exercised through manual case M19; payment is verified manually in Stripe test mode
+(setup in [`TROUBLESHOOTING.md`](./TROUBLESHOOTING.md)). Automating payment is intentionally out of
+scope: faking the full Stripe lifecycle, including webhooks, is brittle and low-value at this size.
 
 Also deliberately excluded everywhere: snapshot tests of rendered markup. They break on every styling
 change and assert nothing about behaviour.
@@ -254,7 +259,7 @@ correct rather than merely present; M16 and M18 together prove that a refusal re
 | `BookingControllerTest` | Deferred — section 3.3. The rules these would cover are already proven by the unit tests and the manual cases; held back pending review feedback rather than duplicating coverage |
 | Frontend validators (`utils/auth.test.ts`) | Complete — V1–V7 written and passing (section 4.3) |
 | Frontend auth components (`app/page.test.tsx`, `app/login/page.test.tsx`) | Complete — F1–F4 written and passing |
-| Frontend booking component (`app/bookings/page.test.tsx`) | Complete — F6 written and passing; F5 retired as a backend-covered rule (section 4.2) |
+| Frontend booking component (`app/bookings/page.test.tsx`) | Complete — F5 and F6 written and passing (section 4.2) |
 
 Run the backend suite with:
 

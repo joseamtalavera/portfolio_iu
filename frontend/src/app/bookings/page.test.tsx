@@ -65,4 +65,30 @@ describe("Booking page", () => {
 
         expect(await screen.findByText("Time Slot Already Booked")).toBeInTheDocument();
     });
+
+    it("End Hour dropdown offers only slots later than the chosen Start Hour", async () => { // TEST_PLAN F5
+        const user = userEvent.setup();
+        render(
+            <ThemeProvider theme={theme}>
+                <BookingsPage />
+            </ThemeProvider>
+        );
+
+        // A date with no existing booking, so every slot is available.
+        const dateField = await screen.findByLabelText("Date");
+        await user.type(dateField, "2030-02-02");
+
+        // Pick a Start Hour partway through the day.
+        await user.click(screen.getByLabelText("Start Hour"));
+        await user.click(await screen.findByRole("option", { name: "11:00" }));
+
+        // Open the End Hour dropdown and inspect what it offers.
+        await user.click(screen.getByLabelText("End Hour"));
+
+        // A later slot is offered...
+        expect(await screen.findByRole("option", { name: "11:30" })).toBeInTheDocument();
+        // ...but the equal slot and an earlier one are not.
+        expect(screen.queryByRole("option", { name: "11:00" })).not.toBeInTheDocument();
+        expect(screen.queryByRole("option", { name: "10:30" })).not.toBeInTheDocument();
+    });
 });

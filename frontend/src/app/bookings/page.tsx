@@ -244,6 +244,14 @@ export default function BookingsPage() {
     });
   }, [allTimeOptions, form.date, bookings]);
 
+  // End Hour can only be a slot later than the chosen Start Hour.
+  // Before a start is picked, show every available slot.
+  const endTimeOptions = useMemo(() => {
+    if (!form.startHour) return availableTimeOptions;
+    const startMin = parseTimeToMinutes(form.startHour);
+    return availableTimeOptions.filter((time) => parseTimeToMinutes(time) > startMin);
+  }, [availableTimeOptions, form.startHour]);
+
   const handleChange = (field: keyof typeof form) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value = field === "attendees" ? Number(event.target.value) : event.target.value;
     
@@ -279,6 +287,15 @@ export default function BookingsPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.date, availableTimeOptions]);
+
+  // If the chosen End is no longer after the Start (Start moved later),
+  // clear it so the field never shows an invalid end time.
+  useEffect(() => {
+    if (form.startHour && form.endHour &&
+        parseTimeToMinutes(form.endHour) <= parseTimeToMinutes(form.startHour)) {
+      setForm((prev) => ({ ...prev, endHour: "" }));
+    }
+  }, [form.startHour, form.endHour]);
 
   // Check if the selected time slot conflicts with existing bookings
   const checkForConflict = (date: string, startHour: string, endHour: string): boolean => {
@@ -535,7 +552,7 @@ export default function BookingsPage() {
                     InputLabelProps={{ shrink: true }}
                     fullWidth
                   >
-                    {availableTimeOptions.map((time) => (
+                    {endTimeOptions.map((time) => (
                       <MenuItem key={time} value={time}>
                         {time}
                       </MenuItem>
