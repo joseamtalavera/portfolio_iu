@@ -58,7 +58,7 @@ Then edit `backend/.env`:
 | Variable | Required | Notes |
 |----------|----------|-------|
 | `DB_USERNAME` | yes | `bework_user` if you used the commands above |
-| `DB_PASSWORD` | yes | the password you chose |
+| `DB_PASSWORD` | yes | `bework_pass` if you used the commands above |
 | `JWT_SECRET` | yes | generate your own: `openssl rand -base64 64 \| tr -d '\n'` |
 | `STRIPE_SECRET_KEY` | optional | Stripe test key (`sk_test_…`) |
 | `STRIPE_WEBHOOK_SECRET` | optional | from `stripe listen` |
