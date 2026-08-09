@@ -11,9 +11,13 @@ import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "@/theme";
 import BookingsPage from "./page";
 
-vi.mock("next/navigation", () => ({
-    useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
-}));
+vi.mock("next/navigation", () => {
+    // Return the SAME router object on every call. A fresh object each render would
+    // change the identity of the mount effect's [router] dependency, re-running it
+    // every render — an infinite refetch loop ("Maximum update depth exceeded").
+    const router = { push: vi.fn(), replace: vi.fn() };
+    return { useRouter: () => router };
+});
 
 vi.mock("@/components/dashboard-layout", () => ({
     DashboardLayout: ({ children }: { children: ReactNode }) => children,
@@ -90,5 +94,41 @@ describe("Booking page", () => {
         // ...but the equal slot and an earlier one are not.
         expect(screen.queryByRole("option", { name: "11:00" })).not.toBeInTheDocument();
         expect(screen.queryByRole("option", { name: "10:30" })).not.toBeInTheDocument();
+    });
+
+    it("shows the server's error message in the banner when a create fails", async () => { // TEST_PLAN F7
+        const user = userEvent.setup();
+        // Method-aware mock: every GET returns an empty list; the POST (create) is
+        // rejected with a JSON message. Order-independent, so extra GETs can't break it.
+        const fetchMock = vi.fn((_url: string, options?: RequestInit) =>
+            Promise.resolve(
+                options?.method === "POST"
+                    ? { ok: false, status: 500, json: async () => ({ message: "The booking could not be saved" }) }
+                    : { ok: true, json: async () => [] }
+            )
+        );
+        vi.stubGlobal("fetch", fetchMock);
+
+        render(
+            <ThemeProvider theme={theme}>
+                <BookingsPage />
+            </ThemeProvider>
+        );
+
+        // A free date, so the client conflict guard passes and the request is actually sent.
+        const dateField = await screen.findByLabelText("Date");
+        await user.type(dateField, "2030-03-03");
+
+        await user.click(screen.getByLabelText("Start Hour"));
+        await user.click(await screen.findByRole("option", { name: "09:00" }));
+        await user.click(screen.getByLabelText("End Hour"));
+        await user.click(await screen.findByRole("option", { name: "10:00" }));
+
+        await user.click(screen.getByRole("button", { name: "Create Booking" }));
+
+        // The banner shows the backend's message, not a generic fallback or raw JSON.
+        expect(
+            await screen.findByText("The booking could not be saved")
+        ).toBeInTheDocument();
     });
 });

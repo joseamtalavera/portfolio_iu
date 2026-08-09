@@ -70,9 +70,9 @@ each tagged with its `// TEST_PLAN B#`.
 
 | # | Test | Rule protected | Expected |
 |---|---|---|---|
-| B1 | `createRejectsEndBeforeStart` | End must be after start (F26) | `400 Bad Request`, nothing saved |
+| B1 | `createRejectsEndBeforeStart` | End must be after start | `400 Bad Request`, nothing saved |
 | B2 | `createRejectsEqualStartAndEnd` | A zero-length booking is not a booking | `400 Bad Request` |
-| B3 | `createRejectsOverlap` | No double booking (F25) | `409 Conflict`, nothing saved |
+| B3 | `createRejectsOverlap` | No double booking | `409 Conflict`, nothing saved |
 | B4 | `createSavesWhenSlotIsFree` | The happy path still works | Response carries the new id |
 | B5 | `createAttachesCallerOwner` | Owner comes from the token, never the request body | Saved booking has the caller's id |
 | B6 | `deleteRefusesBookingOwnedBySomeoneElse` | IDOR prevention | `403 Forbidden`, nothing deleted |
@@ -124,7 +124,6 @@ here is untested — it is just checked by hand rather than by `@WebMvcTest`. Tu
 real slice tests is the obvious next step if the suite grows.
 
 ### 3.4 Context — `BackendApplicationTests` (integration) — *exists*
-
 It lives in `backend/src/test/java/com/beworking/backend/BackendApplicationTests.java` — the
 default Spring Boot smoke test, so it has no `// TEST_PLAN` tag of its own.
 
@@ -161,15 +160,17 @@ The register form is part of the landing page (`app/page.tsx`); login is its own
 
 ### 4.2 Booking component test — bookings page
 
-The booking form lives on the bookings page (`app/bookings/page.tsx`). Two client behaviours are
+The booking form lives on the bookings page (`app/bookings/page.tsx`). Three client behaviours are
 covered here: F5 asserts the End Hour dropdown only offers slots later than the chosen Start Hour,
-and F6 asserts the client blocks an overlapping slot before any request is sent. Both live in
+F6 asserts the client blocks an overlapping slot before any request is sent, and F7 asserts that
+when the server rejects a create, its error message is shown in the banner. All live in
 `frontend/src/app/bookings/page.test.tsx`, each tagged with its `// TEST_PLAN F#`.
 
 | # | Test | Rule protected | Where |
 |---|---|---|---|
 | F5 | After a Start Hour is chosen, the End Hour dropdown lists only later slots — an end ≤ start cannot be selected | The client enforces end > start in the UI, not only on the backend | `frontend/src/app/bookings/page.test.tsx` |
 | F6 | Choosing a slot that overlaps an existing booking opens the "Time Slot Already Booked" dialog, before any request is sent | The client blocks a double booking and says so, without a wasted round trip | `frontend/src/app/bookings/page.test.tsx` |
+| F7 | When a create request fails, the banner shows the server's message (not a raw JSON body or a generic fallback) | The server's error reason survives to the screen | `frontend/src/app/bookings/page.test.tsx` |
 
 **Why F5 is now a client test.** Originally both dropdowns drew from the same slot list, so an
 end ≤ start *was* selectable — the resulting `400` came back as a generic "Failed to create
@@ -182,6 +183,12 @@ to check it. The backend (B1, B2) is still the safety net.
 **What F6 tests.** F6 checks the client's own double-booking block. When you pick a slot that
 clashes with a booking already on screen, the app opens the "Time Slot Already Booked" dialog right
 away: a local check (`checkForConflict`) runs first, so no request is even sent to the server.
+
+**What F7 tests.** F7 checks the failure path. `fetch` is mocked so the create request comes back
+with `ok:false` and a JSON body carrying a `message`; the test asserts that exact message reaches
+the error banner. It does not test any specific rule (overlap, end-before-start) — those are the
+backend's job (B1–B3) — only that whatever reason the server sends is displayed, rather than the
+raw JSON that used to appear.
 
 The test sets this up directly — it loads one existing booking (10:30–11:30, via a mocked `fetch`),
 fills the form with an overlapping 10:00–11:30, clicks Create, and checks the dialog appears.
@@ -268,7 +275,7 @@ booking exists.
 
 | Gap | Why it is not covered | Correct fix |
 |---|---|---|
-| Concurrent double booking | Two simultaneous requests can both pass the overlap check before either writes. A unit test with mocks cannot reproduce it. | A PostgreSQL exclusion constraint, which requires versioned migrations first (F12) |
+| Concurrent double booking | Two simultaneous requests can both pass the overlap check before either writes. A unit test with mocks cannot reproduce it. | A PostgreSQL exclusion constraint, which requires versioned database migrations first |
 | No load or performance testing | Out of scope for the brief | JMeter or k6 against the booking endpoint |
 | No end-to-end browser tests | Cost outweighs value at this size; the manual cases above cover the same paths | Playwright, if the project grew |
 
@@ -286,7 +293,7 @@ booking exists.
 | `BookingControllerTest` | Deferred — section 3.3. The HTTP checks these would automate are covered by the manual cases (M03, M08, M13, M14) for now; writing them as slice tests is the next step if the suite grows |
 | Frontend validators (`utils/auth.test.ts`) | Complete — V1–V7 written and passing (section 4.3) |
 | Frontend auth components (`app/page.test.tsx`, `app/login/page.test.tsx`) | Complete — F1–F4 written and passing |
-| Frontend booking component (`app/bookings/page.test.tsx`) | Complete — F5 and F6 written and passing (section 4.2) |
+| Frontend booking component (`app/bookings/page.test.tsx`) | Complete — F5, F6 and F7 written and passing (section 4.2) |
 
 Run the backend suite with:
 
