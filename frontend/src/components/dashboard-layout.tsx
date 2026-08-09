@@ -100,6 +100,15 @@ export function DashboardLayout({
         const response = await fetch(`${API_URL}/user/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        if (response.status === 401) {
+          // Token expired or tampered: drop it and send the user to login.
+          // Every authenticated page renders this layout, so this one handler
+          // makes the redirect consistent across bookings, mailbox and profile.
+          localStorage.removeItem("jwt");
+          localStorage.removeItem("user");
+          router.replace("/login");
+          return;
+        }
         if (!response.ok) return;
         const userData = await response.json() as User;
         if (cancelled) return;
@@ -112,7 +121,7 @@ export function DashboardLayout({
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     if (profileModalOpen) {

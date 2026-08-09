@@ -354,8 +354,8 @@ export default function BookingsPage() {
         body: JSON.stringify(form),
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Failed to create booking");
+        const body = await response.json().catch(() => null);
+        throw new Error(body?.message || "Failed to create booking");
       }
       // Reset form on success
       setForm({ product: "Meeting Room", date: "", startHour: "", endHour: "", attendees: 1 });
@@ -527,6 +527,7 @@ export default function BookingsPage() {
                     type="date"
                     value={form.date}
                     onChange={handleChange("date")}
+                    inputProps={{ min: new Date().toLocaleDateString("en-CA") }}
                     InputLabelProps={{ shrink: true }}
                     fullWidth
                   />
