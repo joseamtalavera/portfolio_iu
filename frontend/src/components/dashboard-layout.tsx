@@ -3,7 +3,7 @@
 /**
  * Dashboard layout with sidebar navigation, top bar, and profile/payment modals.
  */
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, Suspense } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   AppBar,
@@ -69,7 +69,7 @@ interface DashboardLayoutProps {
  * @param children page content
  * @returns dashboard layout element
  */
-export function DashboardLayout({
+function DashboardLayoutContent({
   active,
   user,
   onLogout,
@@ -420,5 +420,20 @@ export function DashboardLayout({
         />
       </Box>
     </PaymentModalContext.Provider>
+  );
+}
+
+/**
+ * Wraps the layout in a Suspense boundary, required by `next build` because
+ * the layout reads the URL with useSearchParams().
+ *
+ * @param props layout props, passed through unchanged
+ * @returns dashboard layout element
+ */
+export function DashboardLayout(props: DashboardLayoutProps) {
+  return (
+    <Suspense fallback={null}>
+      <DashboardLayoutContent {...props} />
+    </Suspense>
   );
 }

@@ -249,9 +249,9 @@ export default function DashboardContent() {
             </Box>
             <Button 
               variant="contained" 
-              fullWidth={{ xs: true, sm: false}}
-              sx={{ 
+              sx={{
                 textTransform: "none",
+                width: { xs: "100%", sm: "auto" },
                 bgcolor: theme.palette.brand.green,
                 "&:hover": {
                   bgcolor: theme.palette.brand.greenHover,
