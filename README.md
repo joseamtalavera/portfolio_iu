@@ -90,17 +90,15 @@ cp .env.example .env.local
 | Variable | Required | Notes |
 |----------|----------|-------|
 | `NEXT_PUBLIC_API_URL` | yes | `http://localhost:8081/api` — note the `/api` suffix |
-| `NEXT_PUBLIC_STRIPE_PUBLIC_KEY` | optional | Stripe **publishable** key (`pk_test_…`) — only needed if you set up Stripe |
 
 Anything prefixed `NEXT_PUBLIC_` is embedded into the JavaScript bundle and is readable by
-anyone using the site. Only the *publishable* Stripe key belongs here — the secret key stays on
-the server.
+anyone using the site, so no secret belongs here.
 
 ---
 
 ## Running
 
-Two terminals.
+Two terminals — a third only if you want to test the Stripe subscription.
 
 ```bash
 # Terminal 1 — backend, http://localhost:8081
@@ -113,6 +111,12 @@ cd backend
 cd frontend
 npm install
 npm run dev
+```
+
+```bash
+# Terminal 3 — optional, only to test the Stripe subscription
+# (setup: docs/TROUBLESHOOTING.md → "Stripe: Subscription Stays INACTIVE After Paying")
+stripe listen --forward-to localhost:8081/api/subscription/webhook
 ```
 
 Then open <http://localhost:3000>.
